@@ -61,6 +61,25 @@ export interface Phase {
   label: string;
 }
 
+export interface GoalTemplate {
+  id: string;
+  label: string;
+  phases: Phase[];
+  steps: Step[];
+}
+
+export interface GoalAlert {
+  id: string;
+  title: string;
+  desc: string;
+}
+
+export interface NotificationItem {
+  id: string;
+  text: string;
+  read: boolean;
+}
+
 export interface QuickFormState {
   name: string;
   goalLabel: string;
@@ -69,4 +88,16 @@ export interface QuickFormState {
   investing: string;
   risk: string;
   worries: string[];
+}
+
+export interface GoalInstance {
+  id: string;
+  templateId: string;
+  label: string;
+  formState: QuickFormState;
+  doneSteps: Set<string>;
+  // Independent from doneSteps — a step can be checklist-item-complete
+  // without being manually marked done, and vice versa. Keyed by
+  // `${step.id}-${itemIndex}`.
+  doneItems: Set<string>;
 }
