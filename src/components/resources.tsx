@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { RESOURCE_COLORS, RESOURCE_ICON_TEXT, RESOURCE_TYPE_LABELS } from "@/lib/data";
 import type { GuideResource, Resource, ToolResource } from "@/lib/types";
 import ResourceIcon from "./ResourceIcon";
+import Button from "./ui/Button";
 
 export function ResourceBubble({ resource }: { resource: Resource }) {
   const color = RESOURCE_COLORS[resource.type];
@@ -61,23 +62,15 @@ export function ResourceRow({ resource }: { resource: Resource }) {
 
 export function ToolCard({ tool }: { tool: ToolResource }) {
   return (
-    <div className="bg-surface rounded-20 border-2 border-ink/10 w-64 flex-shrink-0 flex flex-col overflow-hidden">
-      <div className="bg-ink text-white py-7 flex items-center justify-center gap-2.5">
-        <span className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center font-display text-sm">
-          {tool.provider.charAt(0)}
-        </span>
-        <span className="font-display uppercase tracking-wide">{tool.provider}</span>
+    <div className="w-72 flex-shrink-0 flex flex-col justify-between rounded-[2rem] bg-surface border-2 border-transparent hover:border-ink/40 transition-colors p-7">
+      <div>
+        <span className="font-sans text-xs font-semibold text-green-woods">Free tool</span>
+        <h3 className="mt-3 font-display text-[clamp(1.4rem,2.2vw,1.7rem)] text-candy-ruby">{tool.title}</h3>
+        <p className="mt-2 text-xs text-candy-ruby/55 leading-relaxed">{tool.description}</p>
       </div>
-      <div className="p-6 flex flex-col flex-1">
-        <p className="font-semibold text-sm mb-1.5">{tool.title}</p>
-        <p className="text-sm text-inksoft mb-5 flex-1 leading-relaxed">{tool.description}</p>
-        <a
-          href={tool.url}
-          className="text-center bg-ink text-white rounded-28 px-5 py-3 text-sm font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
-        >
-          {tool.cta}
-        </a>
-      </div>
+      <Button href={tool.url} variant="green" className="mt-7 self-start">
+        {tool.cta}
+      </Button>
     </div>
   );
 }
@@ -169,7 +162,7 @@ export function HighlightCard({ resource }: { resource: Resource }) {
       href={resource.url}
       target="_blank"
       rel="noreferrer"
-      className="block bg-surface rounded-20 border-2 border-ink/10 overflow-hidden break-inside-avoid mb-5 hover:border-ink/25 transition-colors"
+      className="block bg-surface rounded-20 border-2 border-transparent overflow-hidden break-inside-avoid mb-5 hover:border-ink/40 transition-colors"
     >
       {cover}
       <div className="p-5">{body}</div>

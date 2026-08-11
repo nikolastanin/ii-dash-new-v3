@@ -149,7 +149,7 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
             <SectionHeading icon="highlights" label="Highlights" />
             <p className="text-sm text-inksoft mb-5 -mt-3">A sneak peek at the tools, videos and guides picked for your steps.</p>
             <div className="columns-2 md:columns-1 gap-5">
-              {featured.map((r) => (
+              {featured.slice(0, 4).map((r) => (
                 <HighlightCard key={r.id} resource={r} />
               ))}
             </div>
