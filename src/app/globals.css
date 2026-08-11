@@ -105,10 +105,6 @@ body {
   text-decoration: line-through;
   opacity: 0.5;
 }
-.step-card.done .step-check {
-  background: var(--color-brand);
-  color: #000;
-}
 .step-card.done .step-check .step-num {
   display: none;
 }

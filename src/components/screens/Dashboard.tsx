@@ -114,19 +114,19 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
                 return (
                   <div
                     key={s.id}
-                    className={`step-card flex gap-4 bg-surface rounded-20 border-2 border-ink/10 p-5 md:p-6 cursor-pointer hover:border-ink/25 transition-colors ${done ? "done" : ""}`}
+                    className={`step-card flex gap-4 bg-surface rounded-20 border-2 border-transparent hover:border-ink/40 transition-colors p-5 md:p-6 cursor-pointer ${done ? "done" : ""}`}
                     onClick={() => onOpenStep(s.n)}
                   >
                     <button
-                      className="step-check w-10 h-10 rounded-full bg-canvas border-2 border-transparent flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors hover:border-green-woods"
+                      className="step-check grid size-10 shrink-0 place-items-center rounded-full bg-green-woods mt-0.5 md:size-12"
                       onClick={(e) => {
                         e.stopPropagation();
                         onToggleStepDone(s.n);
                       }}
                       aria-label={`Mark step ${s.n} as done`}
                     >
-                      <span className="step-num font-bold text-sm">{s.n}</span>
-                      <span className="step-tick text-sm">✓</span>
+                      <span className="step-num font-display text-lg text-banana-med md:text-xl">{s.n}</span>
+                      <span className="step-tick font-display text-lg text-banana-med md:text-xl">✓</span>
                     </button>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center flex-wrap gap-2.5 mb-1.5">
