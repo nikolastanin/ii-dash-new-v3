@@ -9,8 +9,9 @@ import Chat from "@/components/screens/Chat";
 import Loading from "@/components/screens/Loading";
 import Dashboard from "@/components/screens/Dashboard";
 import StepDetail from "@/components/screens/StepDetail";
+import ResourceLibrary from "@/components/screens/ResourceLibrary";
 
-type Screen = "landing" | "quickform" | "chat" | "loading" | "dashboard" | "step-detail";
+type Screen = "landing" | "quickform" | "chat" | "loading" | "dashboard" | "step-detail" | "library";
 
 const EMPTY_FORM: QuickFormState = {
   name: "",
@@ -24,8 +25,10 @@ const EMPTY_FORM: QuickFormState = {
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>("landing");
+  const [previousScreen, setPreviousScreen] = useState<Screen>("landing");
   const [formState, setFormState] = useState<QuickFormState>(EMPTY_FORM);
   const [doneSteps, setDoneSteps] = useState<Set<number>>(new Set());
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [currentDetailStep, setCurrentDetailStep] = useState<number | null>(null);
 
   useEffect(() => {
@@ -57,6 +60,15 @@ export default function App() {
     });
   }
 
+  function toggleSaved(id: string) {
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   function resetAll() {
     setFormState(EMPTY_FORM);
     setDoneSteps(new Set());
@@ -69,9 +81,14 @@ export default function App() {
     document.getElementById("tools-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function openLibrary() {
+    setPreviousScreen(screen);
+    setScreen("library");
+  }
+
   return (
     <>
-      <Header onLogoClick={resetAll} onScrollToTools={scrollToTools} onStartOver={resetAll} />
+      <Header onLogoClick={resetAll} onScrollToTools={scrollToTools} onStartOver={resetAll} onOpenLibrary={openLibrary} />
 
       {screen === "landing" && <Landing onStartForm={() => setScreen("quickform")} onStartChat={() => setScreen("chat")} />}
 
@@ -94,6 +111,8 @@ export default function App() {
         <Dashboard
           formState={formState}
           doneSteps={doneSteps}
+          savedIds={savedIds}
+          onToggleSaved={toggleSaved}
           onOpenStep={(n) => {
             setCurrentDetailStep(n);
             setScreen("step-detail");
@@ -108,9 +127,15 @@ export default function App() {
           stepNumber={currentDetailStep}
           done={doneSteps.has(currentDetailStep)}
           doneSteps={doneSteps}
+          savedIds={savedIds}
+          onToggleSaved={toggleSaved}
           onBack={() => setScreen("dashboard")}
           onToggleDone={() => toggleStepDone(currentDetailStep)}
         />
+      )}
+
+      {screen === "library" && (
+        <ResourceLibrary savedIds={savedIds} onToggleSaved={toggleSaved} onBack={() => setScreen(previousScreen)} />
       )}
     </>
   );

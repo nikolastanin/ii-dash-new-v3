@@ -11,11 +11,13 @@ type Props = {
   stepNumber: number;
   done: boolean;
   doneSteps: Set<number>;
+  savedIds: Set<string>;
+  onToggleSaved: (id: string) => void;
   onBack: () => void;
   onToggleDone: () => void;
 };
 
-export default function StepDetail({ stepNumber, done, doneSteps, onBack, onToggleDone }: Props) {
+export default function StepDetail({ stepNumber, done, doneSteps, savedIds, onToggleSaved, onBack, onToggleDone }: Props) {
   const step = STEPS.find((s) => s.n === stepNumber);
   const [expanded, setExpanded] = useState<number | null>(0);
 
@@ -53,14 +55,14 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
             {tool && (
               <div>
                 <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Recommended tool</p>
-                <ToolCard tool={tool} />
+                <ToolCard tool={tool} saved={savedIds.has(tool.id)} onToggleSaved={() => onToggleSaved(tool.id)} />
               </div>
             )}
 
             {relatedGuide && (
               <div>
                 <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Read next</p>
-                <GuideCard guide={relatedGuide} />
+                <GuideCard guide={relatedGuide} saved={savedIds.has(relatedGuide.id)} onToggleSaved={() => onToggleSaved(relatedGuide.id)} />
               </div>
             )}
           </aside>
@@ -138,7 +140,12 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
                       {isExpanded && (
                         <div className="px-5 pb-5 flex flex-col gap-2.5">
                           {resources.map((r) => (
-                            <ResourceRow key={r.id} resource={r} />
+                            <ResourceRow
+                              key={r.id}
+                              resource={r}
+                              saved={savedIds.has(r.id)}
+                              onToggleSaved={() => onToggleSaved(r.id)}
+                            />
                           ))}
                         </div>
                       )}

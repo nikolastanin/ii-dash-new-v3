@@ -7,9 +7,10 @@ type Props = {
   onLogoClick: () => void;
   onScrollToTools: () => void;
   onStartOver: () => void;
+  onOpenLibrary: () => void;
 };
 
-export default function Header({ onLogoClick, onScrollToTools, onStartOver }: Props) {
+export default function Header({ onLogoClick, onScrollToTools, onStartOver, onOpenLibrary }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const guides = Object.values(RESOURCES).filter((r) => r.type === "guide");
 
@@ -55,6 +56,9 @@ export default function Header({ onLogoClick, onScrollToTools, onStartOver }: Pr
           <button onClick={onScrollToTools} className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold">
             Tools
           </button>
+          <button onClick={onOpenLibrary} className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold">
+            Resources
+          </button>
           <button
             onClick={onStartOver}
             className="bg-candy-ruby text-banana-med px-5 py-3 text-sm rounded-full font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
@@ -87,6 +91,15 @@ export default function Header({ onLogoClick, onScrollToTools, onStartOver }: Pr
               className="text-left bg-canvas rounded-full px-5 py-3 text-sm font-semibold"
             >
               Tools
+            </button>
+            <button
+              onClick={() => {
+                onOpenLibrary();
+                setMobileOpen(false);
+              }}
+              className="text-left bg-canvas rounded-full px-5 py-3 text-sm font-semibold"
+            >
+              Resources
             </button>
             <button
               onClick={() => {

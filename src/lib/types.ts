@@ -5,6 +5,7 @@ interface ResourceBase {
   type: ResourceType;
   sponsored: boolean;
   featured?: boolean;
+  category?: string;
   title: string;
   url: string;
 }

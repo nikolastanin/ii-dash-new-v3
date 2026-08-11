@@ -5,17 +5,24 @@ import { ALERT, PHASES, RESOURCES, STEPS, currentPhaseIndex } from "@/lib/data";
 import type { GuideResource, QuickFormState, ToolResource } from "@/lib/types";
 import { HighlightCard, ResourceBubbleStack, ToolCard } from "@/components/resources";
 import { Scallop } from "@/components/shapes";
+import SaveButton from "@/components/SaveButton";
 import StickyProgress from "@/components/StickyProgress";
 
 type Props = {
   formState: QuickFormState;
   doneSteps: Set<number>;
+  savedIds: Set<string>;
+  onToggleSaved: (id: string) => void;
   onOpenStep: (n: number) => void;
   onToggleStepDone: (n: number) => void;
 };
 
 const DONUT_R = 78;
 const DONUT_CIRC = 2 * Math.PI * DONUT_R;
+
+function scrollToSection(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 function collectStepResourceIds(step: (typeof STEPS)[number]) {
   const ids = new Set<string>();
@@ -27,7 +34,7 @@ function collectStepResourceIds(step: (typeof STEPS)[number]) {
   return [...ids];
 }
 
-export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleStepDone }: Props) {
+export default function Dashboard({ formState, doneSteps, savedIds, onToggleSaved, onOpenStep, onToggleStepDone }: Props) {
   const [alertDismissed, setAlertDismissed] = useState(false);
 
   const pills = [formState.timeframe, formState.experience, formState.risk].filter(Boolean);
@@ -62,15 +69,15 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
                 <span className="font-semibold text-creamy">You told us:</span> {formState.goalLabel || "Building a stronger financial future"}
               </p>
               <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-creamy/90 mb-4">
-                <span>
+                <button onClick={() => scrollToSection("plan-section")} className="hover:text-creamy transition-colors">
                   <span className="font-display text-banana-med">{STEPS.length}</span> steps
-                </span>
-                <span>
+                </button>
+                <button onClick={() => scrollToSection("tools-section")} className="hover:text-creamy transition-colors">
                   <span className="font-display text-banana-med">{tools.length}</span> tools
-                </span>
-                <span>
+                </button>
+                <button onClick={() => scrollToSection("guides-section")} className="hover:text-creamy transition-colors">
                   <span className="font-display text-banana-med">{guides.length}</span> guides
-                </span>
+                </button>
               </div>
               <div className="flex flex-wrap gap-2.5">
                 {pills.map((p) => (
@@ -149,7 +156,7 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
 
         {/* Plan + Highlights */}
         <div className="md:grid md:grid-cols-3 md:gap-9 md:items-start mb-12">
-          <div className="md:col-span-2 mb-12 md:mb-0">
+          <div className="md:col-span-2 mb-12 md:mb-0" id="plan-section">
             <SectionHeading icon="plan" label="Your plan" />
             <div className="flex flex-col gap-3.5">
               {STEPS.map((s) => {
@@ -196,7 +203,13 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
             <p className="text-sm text-inksoft mb-5 -mt-3">A preview of what we&rsquo;ve already gathered for you — no digging required.</p>
             <div className="columns-2 md:columns-1 gap-5">
               {featured.slice(0, 4).map((r) => (
-                <HighlightCard key={r.id} resource={r} />
+                <HighlightCard
+                  key={r.id}
+                  resource={r}
+                  className="mb-5"
+                  saved={savedIds.has(r.id)}
+                  onToggleSaved={() => onToggleSaved(r.id)}
+                />
               ))}
             </div>
           </div>
@@ -210,13 +223,13 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
           </p>
           <div className="-mx-8 md:-mx-10 px-8 md:px-10 flex gap-5 overflow-x-auto scrollbar-hide pb-2">
             {tools.map((t) => (
-              <ToolCard key={t.id} tool={t} />
+              <ToolCard key={t.id} tool={t} saved={savedIds.has(t.id)} onToggleSaved={() => onToggleSaved(t.id)} />
             ))}
           </div>
         </div>
 
         {/* Guides */}
-        <div className="mb-12 relative overflow-hidden rounded-[2.5rem] bg-green-light px-6 py-14 md:rounded-[3.5rem] md:px-10 md:py-16">
+        <div className="mb-12 relative overflow-hidden rounded-[2.5rem] bg-green-light px-6 py-14 md:rounded-[3.5rem] md:px-10 md:py-16" id="guides-section">
           <Scallop
             fill="var(--color-green-med)"
             className="pointer-events-none absolute -bottom-20 -left-24 w-96 opacity-40"
@@ -229,7 +242,7 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
             </p>
             <ul className="grid gap-5 md:grid-cols-2">
               {guides.map((g) => (
-                <li key={g.id}>
+                <li key={g.id} className="relative">
                   <a
                     href={g.url}
                     target="_blank"
@@ -237,7 +250,7 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
                     className="group flex h-full flex-col justify-between rounded-[2rem] bg-creamy p-8 transition-transform duration-200 hover:-translate-y-1"
                   >
                     <div>
-                      <span className="font-sans text-xs font-semibold text-green-woods">
+                      <span className="font-sans text-xs font-semibold text-green-woods pr-8">
                         by {g.author}
                       </span>
                       <h3 className="mt-4 font-display text-[clamp(1.3rem,2.2vw,1.6rem)] text-candy-ruby">{g.title}</h3>
@@ -245,6 +258,11 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
                     </div>
                     <p className="mt-8 font-sans text-sm text-candy-ruby/65">{g.readTimeMins} min read</p>
                   </a>
+                  <SaveButton
+                    saved={savedIds.has(g.id)}
+                    onToggle={() => onToggleSaved(g.id)}
+                    className="absolute top-8 right-8 w-8 h-8 bg-surface"
+                  />
                 </li>
               ))}
             </ul>

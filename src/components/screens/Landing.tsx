@@ -3,6 +3,24 @@ type Props = {
   onStartChat: () => void;
 };
 
+const HOW_IT_WORKS = [
+  {
+    n: "1",
+    title: "Tell us your goal",
+    body: "A few quick questions, or just chat in your own words — whatever's easiest for you.",
+  },
+  {
+    n: "2",
+    title: "We match you with what matters",
+    body: "Steps, tools and guides picked for your exact situation, not a generic list everyone gets.",
+  },
+  {
+    n: "3",
+    title: "Follow a clear path",
+    body: "Tick things off as you go, and come back anytime — everything stays gathered in one place.",
+  },
+];
+
 export default function Landing({ onStartForm, onStartChat }: Props) {
   return (
     <section className="min-h-screen flex flex-col">
@@ -60,6 +78,27 @@ export default function Landing({ onStartForm, onStartChat }: Props) {
               </span>
             </button>
           </div>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-green-light px-6 py-14 mt-8 md:rounded-[3.5rem] md:px-12 md:py-20">
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="font-display text-[clamp(2rem,5vw,3.5rem)] text-candy-ruby mb-3">How it works</h2>
+            <p className="text-candy-ruby/70 text-lg">Quick and straightforward.</p>
+          </div>
+
+          <ol className="flex flex-col gap-4 max-w-2xl mx-auto">
+            {HOW_IT_WORKS.map((step) => (
+              <li key={step.n} className="flex gap-4 md:gap-7 rounded-[1.5rem] bg-creamy p-5 md:p-8">
+                <span className="grid size-10 md:size-12 shrink-0 place-items-center rounded-full bg-green-woods font-display text-lg text-banana-med md:text-xl">
+                  {step.n}
+                </span>
+                <div>
+                  <h3 className="font-display text-xl md:text-2xl text-candy-ruby">{step.title}</h3>
+                  <p className="mt-1.5 text-sm md:text-base text-candy-ruby/70 leading-relaxed">{step.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </main>
 
