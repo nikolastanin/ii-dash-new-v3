@@ -1,0 +1,236 @@
+"use client";
+
+import { useMemo, useState, type ReactNode } from "react";
+import { ALERT, PHASES, RESOURCES, STEPS, currentPhaseIndex } from "@/lib/data";
+import type { GuideResource, QuickFormState, ToolResource } from "@/lib/types";
+import { HighlightCard, ResourceBubbleStack, ToolCard } from "@/components/resources";
+import { Scallop } from "@/components/shapes";
+import StickyProgress from "@/components/StickyProgress";
+
+type Props = {
+  formState: QuickFormState;
+  doneSteps: Set<number>;
+  onOpenStep: (n: number) => void;
+  onToggleStepDone: (n: number) => void;
+};
+
+function collectStepResourceIds(step: (typeof STEPS)[number]) {
+  const ids = new Set<string>();
+  step.checklist.forEach((item) => {
+    if (typeof item === "object" && item.resourceIds) {
+      item.resourceIds.forEach((id) => ids.add(id));
+    }
+  });
+  return [...ids];
+}
+
+export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleStepDone }: Props) {
+  const [alertDismissed, setAlertDismissed] = useState(false);
+
+  const pills = [formState.timeframe, formState.experience, formState.risk].filter(Boolean);
+
+  const currentIndex = useMemo(() => currentPhaseIndex(doneSteps), [doneSteps]);
+
+  const featured = Object.values(RESOURCES).filter((r) => r.featured);
+  const tools = Object.values(RESOURCES).filter((r): r is ToolResource => r.type === "tool");
+  const guides = Object.values(RESOURCES).filter((r): r is GuideResource => r.type === "guide");
+
+  return (
+    <section className="min-h-screen">
+      <main className="max-w-4xl mx-auto w-full px-6 pb-24">
+        {/* Hero */}
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-green-woods px-8 py-12 md:rounded-[3.5rem] md:px-12 md:py-16 text-creamy mt-6 mb-8">
+          <Scallop
+            fill="var(--color-green-med)"
+            className="pointer-events-none absolute -bottom-16 -right-16 w-64 opacity-25"
+          />
+          <div className="relative">
+            <p className="text-xs uppercase tracking-[0.14em] font-display text-banana-med mb-4">Your plan</p>
+            <h1 className="font-display text-[clamp(1.9rem,4.5vw,3rem)] text-banana-med mb-3">
+              Hi {formState.name || "there"}, here&rsquo;s where to start.
+            </h1>
+            <p className="text-creamy/80 mb-6">
+              <span className="font-semibold text-creamy">You told us:</span> {formState.goalLabel || "Building a stronger financial future"}
+            </p>
+            <div className="flex flex-wrap gap-2.5">
+              {pills.map((p) => (
+                <span key={p} className="text-xs font-semibold bg-creamy/15 rounded-full px-4 py-1.5">
+                  {p}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Alert */}
+        {!alertDismissed && (
+          <div className="relative flex flex-col overflow-hidden rounded-[2rem] bg-aqua-light text-aqua-teal p-8 md:p-10 mb-10">
+            <div className="flex items-start gap-4">
+              <span className="w-9 h-9 rounded-full bg-aqua-teal text-aqua-light flex items-center justify-center font-display flex-shrink-0">!</span>
+              <div className="flex-1">
+                <p className="font-display text-lg mb-1">{ALERT.title}</p>
+                <p className="text-sm text-aqua-teal/80 leading-relaxed">{ALERT.desc}</p>
+              </div>
+              <button onClick={() => setAlertDismissed(true)} className="text-aqua-teal/60 hover:text-aqua-teal text-sm flex-shrink-0" aria-label="Dismiss">
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Journey */}
+        <div className="rounded-t-[2rem] bg-banana-light p-8 pb-2 md:p-10 md:pb-2">
+          <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.25rem)] text-candy-ruby mb-8">Your journey</h2>
+          <div className="flex items-center overflow-x-auto scrollbar-hide">
+            {PHASES.map((p, i) => {
+              const status = i < currentIndex ? "done" : i === currentIndex ? "current" : "upcoming";
+              return (
+                <div key={p.id} className="contents">
+                  <div className="flex flex-col items-center flex-shrink-0 w-24">
+                    <span className={`phase-circle w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${status}`}>
+                      {status === "done" ? "✓" : i + 1}
+                    </span>
+                    <span className={`text-xs font-semibold mt-2.5 text-center ${status === "upcoming" ? "text-candy-ruby/50" : "text-candy-ruby"}`}>{p.label}</span>
+                  </div>
+                  {i < PHASES.length - 1 && <div className={`phase-line h-[2px] flex-1 min-w-[24px] ${i < currentIndex ? "done" : "bg-candy-ruby/15"}`} />}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <StickyProgress doneSteps={doneSteps} />
+
+        {/* Plan + Highlights */}
+        <div className="md:grid md:grid-cols-3 md:gap-9 md:items-start mb-12">
+          <div className="md:col-span-2 mb-12 md:mb-0">
+            <SectionHeading icon="plan" label="Your plan" />
+            <div className="flex flex-col gap-3.5">
+              {STEPS.map((s) => {
+                const resources = collectStepResourceIds(s)
+                  .map((id) => RESOURCES[id])
+                  .filter(Boolean);
+                const done = doneSteps.has(s.n);
+                return (
+                  <div
+                    key={s.id}
+                    className={`step-card flex gap-4 bg-surface rounded-20 border-2 border-ink/10 p-5 md:p-6 cursor-pointer hover:border-ink/25 transition-colors ${done ? "done" : ""}`}
+                    onClick={() => onOpenStep(s.n)}
+                  >
+                    <button
+                      className="step-check w-10 h-10 rounded-full bg-canvas border-2 border-transparent flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors hover:border-green-woods"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleStepDone(s.n);
+                      }}
+                      aria-label={`Mark step ${s.n} as done`}
+                    >
+                      <span className="step-num font-bold text-sm">{s.n}</span>
+                      <span className="step-tick text-sm">✓</span>
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center flex-wrap gap-2.5 mb-1.5">
+                        <h3 className="step-title font-semibold">{s.title}</h3>
+                        <span className={`tag tag-${s.tag.toLowerCase()}`}>{s.tag}</span>
+                      </div>
+                      <p className="text-sm text-inksoft mb-3 leading-relaxed">{s.desc}</p>
+                      <div className="flex items-center gap-3.5">
+                        <ResourceBubbleStack resources={resources} />
+                        <span className="text-sm font-semibold">View details →</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="md:col-span-1 md:sticky md:top-28 md:self-start">
+            <SectionHeading icon="highlights" label="Highlights" />
+            <p className="text-sm text-inksoft mb-5 -mt-3">A sneak peek at the tools, videos and guides picked for your steps.</p>
+            <div className="columns-2 md:columns-1 gap-5">
+              {featured.map((r) => (
+                <HighlightCard key={r.id} resource={r} />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Tools */}
+        <div className="mb-12 rounded-[2rem] bg-candy-light p-8 md:p-10" id="tools-section">
+          <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.25rem)] text-candy-ruby mb-8">Tools for you</h2>
+          <div className="-mx-8 md:-mx-10 px-8 md:px-10 flex gap-5 overflow-x-auto scrollbar-hide pb-2">
+            {tools.map((t) => (
+              <ToolCard key={t.id} tool={t} />
+            ))}
+          </div>
+        </div>
+
+        {/* Guides */}
+        <div className="mb-12 relative overflow-hidden rounded-[2.5rem] bg-green-light px-6 py-14 md:rounded-[3.5rem] md:px-10 md:py-16">
+          <Scallop
+            fill="var(--color-green-med)"
+            className="pointer-events-none absolute -bottom-20 -left-24 w-96 opacity-40"
+          />
+          <div className="relative">
+            <h2 className="font-display text-[clamp(2rem,5vw,3.25rem)] text-green-woods mb-10">Guides</h2>
+            <ul className="grid gap-5 md:grid-cols-2">
+              {guides.map((g) => (
+                <li key={g.id}>
+                  <a
+                    href={g.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex h-full flex-col justify-between rounded-[2rem] bg-creamy p-8 transition-transform duration-200 hover:-translate-y-1"
+                  >
+                    <div>
+                      <span className="font-sans text-xs font-semibold text-green-woods">
+                        by {g.author}
+                      </span>
+                      <h3 className="mt-4 font-display text-[clamp(1.3rem,2.2vw,1.6rem)] text-candy-ruby">{g.title}</h3>
+                      <p className="mt-3 text-sm text-candy-ruby/65 leading-relaxed line-clamp-3">{g.description}</p>
+                    </div>
+                    <p className="mt-8 font-sans text-sm text-candy-ruby/65">{g.readTimeMins} min read</p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <p className="text-xs text-inksoft pt-2">
+          Prototype note — this dashboard is hardcoded for the demo. In the live product every section above is generated from your
+          actual answers, pulling from a live JSON set of steps, tools and guides.
+        </p>
+      </main>
+    </section>
+  );
+}
+
+const ICONS: Record<string, ReactNode> = {
+  plan: (
+    <>
+      <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </>
+  ),
+  highlights: (
+    <>
+      <rect x="3" y="3" width="7" height="9" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="3" width="7" height="5" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="14" y="12" width="7" height="9" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <rect x="3" y="16" width="7" height="5" rx="2" stroke="currentColor" strokeWidth="1.6" />
+    </>
+  ),
+};
+
+function SectionHeading({ icon, label }: { icon: keyof typeof ICONS; label: string }) {
+  return (
+    <div className="flex items-center mb-5">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="text-brand flex-shrink-0">
+        {ICONS[icon]}
+      </svg>
+      <h2 className="font-display uppercase text-xl ml-3">{label}</h2>
+    </div>
+  );
+}

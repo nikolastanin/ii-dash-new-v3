@@ -1,26 +1,237 @@
 @import "tailwindcss";
 
+/* Design tokens ported from the Mortgage Insiders brand system:
+   candy-ruby ink, green/banana accents, Yowza display + Public Sans,
+   generous rounded-everything shape language. */
+@theme {
+  --color-green-light: #aae3bd;
+  --color-green-med: #5cc296;
+  --color-green-woods: #05593d;
+
+  --color-candy-light: #ffd4e8;
+  --color-candy-med: #ffbfd9;
+  --color-candy-ruby: #540329;
+
+  --color-banana-light: #fcf9b7;
+  --color-banana-med: #fced56;
+
+  --color-aqua-light: #92e8ea;
+  --color-aqua-med: #12d1d1;
+  --color-aqua-teal: #005252;
+
+  --color-creamy: #f4f5ef;
+  --color-muddy: #383838;
+
+  /* Semantic aliases so the prototype's bg-canvas / text-ink style class
+     names carry over, painted with the Mortgage Insiders palette. */
+  --color-canvas: var(--color-creamy);
+  --color-surface: #ffffff;
+  --color-ink: var(--color-candy-ruby);
+  --color-inksoft: color-mix(in srgb, var(--color-candy-ruby) 62%, transparent);
+  --color-line: color-mix(in srgb, var(--color-candy-ruby) 12%, transparent);
+
+  --color-brand: var(--color-green-med);
+  --color-brandlight: var(--color-green-light);
+  --color-branddark: var(--color-green-woods);
+
+  --color-accent: #c98a2b;
+  --color-accentlight: #fbf3e3;
+
+  --color-alert: #a6491f;
+  --color-alertlight: #fbeee4;
+
+  --font-display: var(--font-yowza), system-ui, sans-serif;
+  --font-sans: var(--font-public-sans), system-ui, sans-serif;
+
+  --radius-20: 20px;
+  --radius-28: 28px;
+  --radius-30: 30px;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  scroll-behavior: auto;
+  --header-h: 88px;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Yowza is a heavy display face — tighten tracking/leading at the sizes
+   we use it (headings, buttons, tags), matching the source brand's rule. */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.04;
+}
+
+.option-pill.selected,
+.chip.selected {
+  background: var(--color-green-light);
+  border-color: var(--color-green-woods);
+  color: var(--color-ink);
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.tag-guide {
+  color: var(--color-green-woods);
+  background: var(--color-brandlight);
+}
+.tag-tool {
+  color: #8a6417;
+  background: var(--color-accentlight);
+}
+.tag-alert {
+  color: var(--color-alert);
+  background: var(--color-alertlight);
+}
+
+.step-check .step-tick {
+  display: none;
+}
+.step-card.done .step-title {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+.step-card.done .step-check {
+  background: var(--color-brand);
+  color: #000;
+}
+.step-card.done .step-check .step-num {
+  display: none;
+}
+.step-card.done .step-check .step-tick {
+  display: inline;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.chat-bubble-user {
+  background: var(--color-brand);
+  color: #000;
+  border-bottom-right-radius: 6px;
+}
+.chat-bubble-assistant {
+  background: #fff;
+  color: #000;
+  border-bottom-left-radius: 6px;
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spinner {
+  animation: spin-slow 0.9s linear infinite;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-line);
+  transition: background 0.2s;
+}
+.dot.active {
+  background: var(--color-brand);
+}
+.dot.filled {
+  background: color-mix(in srgb, var(--color-candy-ruby) 35%, transparent);
+}
+
+.phase-circle.done {
+  background: var(--color-green-woods);
+  color: var(--color-banana-med);
+}
+.phase-circle.current {
+  color: var(--color-ink);
+  background: #fff;
+  border: 2px solid var(--color-green-woods);
+}
+.phase-circle.upcoming {
+  color: color-mix(in srgb, var(--color-candy-ruby) 45%, transparent);
+  background: #fff;
+}
+.phase-line.done {
+  background: var(--color-green-woods);
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-clamp: 3;
+}
+
+.nav-dropdown {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+}
+.nav-group:hover .nav-dropdown,
+.nav-dropdown.force-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-chevron {
+  transition: transform 0.2s ease;
+}
+.nav-group:hover .nav-chevron {
+  transform: rotate(180deg);
+}
+
+.checklist-item[data-expanded="false"] .checklist-detail {
+  display: none;
+}
+.checklist-item[data-expanded="true"] .preview-bubbles {
+  display: none;
+}
+.checklist-item[data-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+:focus-visible {
+  outline: 3px solid var(--color-brand);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
