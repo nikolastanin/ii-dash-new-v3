@@ -68,9 +68,9 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
           <div className="order-2 md:order-1 md:col-span-2">
             <p className="text-inksoft text-lg leading-relaxed mb-7">{step.detail}</p>
 
-            <div className="bg-surface rounded-20 border-2 border-ink/10 p-6 mb-9">
+            <div className="rounded-[1.5rem] bg-aqua-light p-6 md:p-7 mb-9">
               <div className="flex items-center gap-2.5 mb-2.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-brand flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-aqua-teal flex-shrink-0">
                   <path
                     d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.5.4.9 1 1 1.7l.1.5h5l.1-.5c.1-.7.5-1.3 1-1.7A6 6 0 0 0 12 3Z"
                     stroke="currentColor"
@@ -79,9 +79,9 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
                     strokeLinejoin="round"
                   />
                 </svg>
-                <p className="font-display uppercase text-sm">Why this matters</p>
+                <p className="font-display uppercase text-sm text-aqua-teal">Why this matters</p>
               </div>
-              <p className="text-[15px] leading-relaxed">{step.why}</p>
+              <p className="text-[15px] leading-relaxed text-aqua-teal/80">{step.why}</p>
             </div>
 
             <div>
@@ -95,8 +95,13 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
 
                   if (!resources.length) {
                     return (
-                      <li key={idx} className="flex items-start gap-3.5 bg-surface rounded-20 border-2 border-ink/10 px-5 py-4">
-                        <span className="w-5 h-5 rounded-full bg-canvas flex-shrink-0 mt-0.5" />
+                      <li
+                        key={idx}
+                        className="flex items-start gap-3.5 bg-surface rounded-20 border-2 border-ink/15 hover:border-ink/25 transition-colors px-5 py-4"
+                      >
+                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-aqua-light text-aqua-teal text-xs font-bold mt-0.5">
+                          {idx + 1}
+                        </span>
                         <span className="text-sm">{text}</span>
                       </li>
                     );
@@ -105,14 +110,19 @@ export default function StepDetail({ stepNumber, done, doneSteps, onBack, onTogg
                   const isExpanded = expanded === idx;
 
                   return (
-                    <li key={idx} className="bg-surface rounded-20 border-2 border-ink/10 overflow-hidden">
+                    <li
+                      key={idx}
+                      className="bg-surface rounded-20 border-2 border-ink/15 hover:border-ink/25 transition-colors overflow-hidden"
+                    >
                       <button
                         type="button"
                         className="group w-full flex items-center gap-3.5 px-5 py-4 text-left hover:bg-canvas/60 transition-colors"
                         onClick={() => setExpanded(isExpanded ? null : idx)}
                         aria-expanded={isExpanded}
                       >
-                        <span className="w-5 h-5 rounded-full bg-canvas border-2 border-transparent flex-shrink-0 transition-colors group-hover:border-green-woods" />
+                        <span className="grid size-6 shrink-0 place-items-center rounded-full bg-aqua-light text-aqua-teal text-xs font-bold">
+                          {idx + 1}
+                        </span>
                         <span className="text-sm flex-1">{text}</span>
                         {!isExpanded && <ResourceBubbleStack resources={resources} />}
                         <svg

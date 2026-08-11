@@ -84,19 +84,14 @@ export function ToolCard({ tool }: { tool: ToolResource }) {
 
 export function GuideCard({ guide }: { guide: GuideResource }) {
   return (
-    <div className="bg-surface rounded-20 border-2 border-ink/10 p-6">
+    <div className="rounded-[2rem] bg-green-light p-6">
       <div className="flex justify-between items-start gap-3 mb-2.5">
-        <h3 className="font-bold flex-1">{guide.title}</h3>
-        <span className="text-xs text-inksoft whitespace-nowrap mt-1">{guide.readTimeMins} mins</span>
+        <span className="font-sans text-xs font-semibold text-green-woods">by {guide.author}</span>
+        <span className="text-xs text-candy-ruby/65 whitespace-nowrap mt-0.5">{guide.readTimeMins} mins</span>
       </div>
-      <div className="flex items-center gap-2.5 mb-3">
-        <span className="w-6 h-6 rounded-full bg-brandlight text-green-woods flex items-center justify-center text-[11px] font-bold flex-shrink-0">
-          {guide.author.charAt(0)}
-        </span>
-        <span className="text-xs font-semibold">by {guide.author}</span>
-      </div>
-      <p className="text-sm text-inksoft mb-4 leading-relaxed line-clamp-3">{guide.description}</p>
-      <a href={guide.url} target="_blank" rel="noreferrer" className="text-sm font-semibold hover:underline">
+      <h3 className="font-display text-[clamp(1.1rem,2vw,1.35rem)] text-candy-ruby mb-2">{guide.title}</h3>
+      <p className="text-sm text-candy-ruby/65 mb-4 leading-relaxed line-clamp-3">{guide.description}</p>
+      <a href={guide.url} target="_blank" rel="noreferrer" className="text-sm font-semibold text-green-woods hover:underline">
         Read more →
       </a>
     </div>
