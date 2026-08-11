@@ -30,6 +30,7 @@ export default function Header({
   blinkKey = 0,
 }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileGuidesOpen, setMobileGuidesOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
   const [meetDougOpen, setMeetDougOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -47,6 +48,22 @@ export default function Header({
     const observer = new ResizeObserver(setHeaderHeight);
     observer.observe(el);
     return () => observer.disconnect();
+  }, []);
+
+  // The mobile nav is a full-height sheet — lock body scroll behind it and
+  // let Escape close it, like any other full-screen overlay in this app.
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
   }, [mobileOpen]);
 
   const notificationsList = (
@@ -139,7 +156,18 @@ export default function Header({
           <button onClick={onOpenLibrary} className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold">
             Resources
           </button>
-          <div id="tour-bell-btn" className="relative nav-group">
+          <button
+            onClick={onStartOver}
+            className="bg-candy-ruby text-banana-med px-5 py-3 text-sm rounded-full font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
+          >
+            Start over
+          </button>
+        </nav>
+
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Bell stays visible at every breakpoint — on mobile it now sits
+              next to the hamburger instead of being buried inside the menu. */}
+          <div id="tour-bell-btn" className="relative nav-group flex-shrink-0">
             <button
               onClick={() => {
                 setBellOpen((v) => !v);
@@ -177,72 +205,114 @@ export default function Header({
               </>
             )}
           </div>
-          <button
-            onClick={onStartOver}
-            className="bg-candy-ruby text-banana-med px-5 py-3 text-sm rounded-full font-display uppercase tracking-wide hover:opacity-90 transition-opacity"
-          >
-            Start over
-          </button>
-        </nav>
 
-        <button
-          onClick={() => {
-            setMobileOpen((v) => !v);
-            if (!mobileOpen) onMarkNotificationsRead();
-          }}
-          aria-label="Menu"
-          className="sm:hidden w-11 h-11 rounded-full bg-surface border-2 border-ink/10 flex items-center justify-center"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M4 6h16M4 12h16M4 18h10" stroke="#540329" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </button>
+          <button
+            onClick={() => setMobileOpen((v) => !v)}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-nav"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden w-11 h-11 rounded-full bg-surface border-2 border-ink/10 flex items-center justify-center flex-shrink-0"
+          >
+            <span className="relative block w-4 h-3.5">
+              <span
+                className={`absolute left-0 block h-[2px] w-4 rounded-full bg-candy-ruby transition-transform ${mobileOpen ? "top-1.5 rotate-45" : "top-0"}`}
+              />
+              <span
+                className={`absolute left-0 top-1.5 block h-[2px] w-4 rounded-full bg-candy-ruby transition-opacity ${mobileOpen ? "opacity-0" : "opacity-100"}`}
+              />
+              <span
+                className={`absolute left-0 block h-[2px] w-4 rounded-full bg-candy-ruby transition-transform ${mobileOpen ? "top-1.5 -rotate-45" : "top-[13px]"}`}
+              />
+            </span>
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
-        <div className="sm:hidden px-6 pb-5">
-          <div className="bg-surface rounded-20 border-2 border-ink/10 p-5 flex flex-col gap-4">
-            <button
-              onClick={() => {
-                onOpenGoals();
-                setMobileOpen(false);
-              }}
-              className="text-left bg-canvas rounded-full px-5 py-3 text-sm font-semibold"
-            >
-              Goals
-            </button>
-            <p className="text-xs uppercase tracking-wide font-semibold text-inksoft">Notifications</p>
-            {notificationsList}
-            <p className="text-xs uppercase tracking-wide font-semibold text-inksoft">Guides</p>
-            {guidesList("mobile-")}
-            <button
-              onClick={() => {
-                onScrollToTools();
-                setMobileOpen(false);
-              }}
-              className="text-left bg-canvas rounded-full px-5 py-3 text-sm font-semibold"
-            >
-              Tools
-            </button>
-            <button
-              onClick={() => {
-                onOpenLibrary();
-                setMobileOpen(false);
-              }}
-              className="text-left bg-canvas rounded-full px-5 py-3 text-sm font-semibold"
-            >
-              Resources
-            </button>
-            <button
-              onClick={() => {
-                onStartOver();
-                setMobileOpen(false);
-              }}
-              className="text-left bg-candy-ruby text-banana-med rounded-full px-5 py-3 text-sm font-display uppercase tracking-wide"
-            >
-              Start over
-            </button>
-          </div>
+        <div
+          id="mobile-nav"
+          aria-label="Mobile"
+          className="sm:hidden fixed inset-x-0 bottom-0 overflow-y-auto rounded-t-[2rem] bg-green-woods p-7 pt-8"
+          style={{ top: "var(--header-h)" }}
+        >
+          <ul className="flex flex-col gap-4">
+            <li>
+              <button
+                onClick={() => {
+                  onOpenGoals();
+                  setMobileOpen(false);
+                }}
+                className="font-display text-3xl uppercase text-banana-med"
+              >
+                Goals
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setMobileGuidesOpen((v) => !v)}
+                aria-expanded={mobileGuidesOpen}
+                className="flex w-full items-center justify-between gap-4 text-left font-display text-3xl uppercase text-banana-med"
+              >
+                Guides
+                <svg
+                  width="20" height="20" viewBox="0 0 24 24" fill="none"
+                  className={`flex-shrink-0 transition-transform ${mobileGuidesOpen ? "rotate-180" : ""}`}
+                >
+                  <path d="M19 9l-7 7-7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              {mobileGuidesOpen && (
+                <ul className="mt-3 flex flex-col gap-3 border-l-2 border-creamy/20 pl-4">
+                  {guides.map((g) => (
+                    <li key={`mobile-nav-${g.id}`}>
+                      <a
+                        href={g.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={() => setMobileOpen(false)}
+                        className="font-sans text-base font-semibold text-creamy"
+                      >
+                        {g.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  onScrollToTools();
+                  setMobileOpen(false);
+                }}
+                className="font-display text-3xl uppercase text-banana-med"
+              >
+                Tools
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  onOpenLibrary();
+                  setMobileOpen(false);
+                }}
+                className="font-display text-3xl uppercase text-banana-med"
+              >
+                Resources
+              </button>
+            </li>
+            <li className="pt-2">
+              <button
+                onClick={() => {
+                  onStartOver();
+                  setMobileOpen(false);
+                }}
+                className="inline-flex h-14 items-center rounded-full bg-banana-med px-7 font-display text-lg uppercase text-candy-ruby"
+              >
+                Start over
+              </button>
+            </li>
+          </ul>
         </div>
       )}
 

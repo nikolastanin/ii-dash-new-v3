@@ -11,10 +11,10 @@ export default function MeetDougModal({ open, onClose }: Props) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/40 px-6" onClick={onClose}>
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/40 px-6 cursor-pointer" onClick={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-2xl bg-candy-med rounded-[2.5rem] px-7 py-10 md:px-10 md:py-12"
+        className="relative w-full max-w-2xl cursor-auto bg-candy-med rounded-[2.5rem] px-7 py-10 md:px-10 md:py-12"
       >
         <button
           onClick={onClose}

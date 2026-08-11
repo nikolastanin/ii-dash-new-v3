@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { GLOBAL_ALERTS, GOAL_ALERTS, RESOURCES, currentPhaseIndex, goalProgressPct } from "@/lib/data";
 import type { ChecklistItem, GuideResource, Phase, Resource, Step, ToolResource } from "@/lib/types";
 import { HighlightCard, ResourceBubbleStack, ToolCard } from "@/components/resources";
@@ -27,7 +28,7 @@ type Props = {
   disableSticky?: boolean;
 };
 
-const TASK_TONES = ["bg-banana-light", "bg-candy-light", "bg-green-light", "bg-aqua-light"];
+const TASK_TONES = ["bg-aqua-light", "bg-banana-light", "bg-candy-light", "bg-green-light"];
 
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -268,7 +269,7 @@ export default function Dashboard({
                       )}
                     </span>
                     <span className={`tag tag-${task.step.tag.toLowerCase()} inline-block mb-3`}>{task.step.tag}</span>
-                    <p className={`font-semibold text-sm text-candy-ruby leading-relaxed mb-3 ${isDone ? "line-through opacity-60" : ""}`}>
+                    <p className={`font-display font-bold text-base text-candy-ruby leading-relaxed mb-3 ${isDone ? "line-through opacity-60" : ""}`}>
                       {task.text}
                     </p>
                     <p className="text-xs text-candy-ruby/55">
@@ -346,20 +347,46 @@ export default function Dashboard({
             </div>
           </div>
 
-          <div className="md:col-span-1 md:sticky md:top-28 md:self-start">
+          <div
+            className="md:col-span-1 md:sticky md:self-start"
+            style={{ top: "calc(var(--header-h) + var(--sticky-progress-h) + 1rem)" }}
+          >
             <SectionHeading icon="highlights" label="Highlights" />
             <p className="text-sm text-inksoft mb-5 -mt-3">A preview of what we&rsquo;ve already gathered for you — no digging required.</p>
             <div className="columns-2 md:columns-1 gap-5">
-              {featured.slice(0, 4).map((r) => (
-                <HighlightCard
-                  key={r.id}
-                  resource={r}
-                  className="mb-5"
-                  saved={savedIds.has(r.id)}
-                  onToggleSaved={() => onToggleSaved(r.id)}
-                  onOpenResource={onOpenResource}
-                  onOpenInternal={onOpenInternal}
-                />
+              {featured.slice(0, 3).map((r, i) => (
+                <div key={r.id} className="contents">
+                  {/* Hardcoded "extra tip" card — not a real resource, just a
+                      nudge toward the remortgage calculator at the 2nd spot. */}
+                  {i === 1 && (
+                    <div className="relative break-inside-avoid mb-5">
+                      <button
+                        type="button"
+                        onClick={() => onOpenInternal("remortgage-calculator")}
+                        className="block w-full text-left bg-candy-ruby rounded-20 border-2 border-transparent overflow-hidden hover:border-ink/40 transition-colors p-5"
+                      >
+                        <span className="inline-flex items-center gap-2 mb-3">
+                          <span className="relative grid size-8 flex-shrink-0 place-items-center rounded-full bg-banana-med">
+                            <Image src="/felt/star-yellow.webp" alt="" width={18} height={18} className="w-[18px] h-[18px]" />
+                          </span>
+                          <span className="text-[11px] uppercase tracking-wide font-bold text-banana-med">Extra tip</span>
+                        </span>
+                        <p className="font-semibold text-sm text-creamy mb-1.5">Check transfer deals, and get a better deal</p>
+                        <p className="text-xs text-creamy/70 leading-relaxed">
+                          See if switching could lower your monthly payments — takes a couple of minutes.
+                        </p>
+                      </button>
+                    </div>
+                  )}
+                  <HighlightCard
+                    resource={r}
+                    className="mb-5"
+                    saved={savedIds.has(r.id)}
+                    onToggleSaved={() => onToggleSaved(r.id)}
+                    onOpenResource={onOpenResource}
+                    onOpenInternal={onOpenInternal}
+                  />
+                </div>
               ))}
             </div>
           </div>

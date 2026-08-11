@@ -18,10 +18,13 @@ export default function ResourceLightbox({ resource, onClose }: Props) {
   const embedSrc = resource.type === "video" ? youtubeEmbedUrl(resource.url) : resource.url;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/55 backdrop-blur-sm p-4 md:p-8" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/55 backdrop-blur-sm p-4 md:p-8 cursor-pointer"
+      onClick={onClose}
+    >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative flex h-full max-h-[85vh] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] bg-surface"
+        className="relative flex h-full max-h-[85vh] w-full max-w-4xl cursor-auto flex-col overflow-hidden rounded-[2rem] bg-surface"
       >
         <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-5 py-4">
           <p className="font-display text-lg text-candy-ruby truncate">{resource.title}</p>

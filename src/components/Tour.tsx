@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import DougIllustration from "@/components/DougIllustration";
 
 export type TourStep = {
@@ -11,6 +12,11 @@ export type TourStep = {
   title: string;
   description: string;
   visual?: "doug";
+  // A grid of highlight boxes for a full-screen intro step, instead of the
+  // Doug illustration (e.g. a "here's what we do for you" step).
+  boxes?: { title: string; description: string }[];
+  // Small decorative image shown above the title on a `boxes` step.
+  image?: string;
 };
 
 type Props = {
@@ -100,14 +106,40 @@ export default function Tour({ steps, active, onFinish }: Props) {
   if (!hasTarget) {
     return createPortal(
       <div className="fixed inset-0 z-[120] flex items-center justify-center bg-ink/55 backdrop-blur-sm px-6">
-        <div className="relative w-full max-w-2xl bg-candy-med rounded-[2.5rem] px-7 py-10 md:px-10 md:py-12">
-          <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:items-end">
+        <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-candy-med rounded-[2.5rem] px-7 py-10 md:px-10 md:py-12">
+          {step.boxes ? (
             <div>
-              <h2 className="font-display text-candy-ruby text-[clamp(1.8rem,5vw,2.75rem)] leading-tight mb-4">{step.title}</h2>
-              <p className="text-candy-ruby/80 text-base md:text-lg leading-relaxed">{step.description}</p>
+              <div className="flex items-center justify-center gap-4 mb-4">
+                {step.image && (
+                  <div className="relative h-20 w-20 flex-shrink-0 md:h-24 md:w-24">
+                    <Image src={step.image} alt="" fill className="object-contain" />
+                  </div>
+                )}
+                <h2 className="font-display text-candy-ruby text-[clamp(1.6rem,4.5vw,2.5rem)] leading-tight text-center">
+                  {step.title}
+                </h2>
+              </div>
+              <p className="text-candy-ruby/80 text-base md:text-lg leading-relaxed text-center mb-8 max-w-lg mx-auto">
+                {step.description}
+              </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {step.boxes.map((b) => (
+                  <div key={b.title} className="relative flex flex-col overflow-hidden rounded-[2rem] bg-aqua-light text-aqua-teal p-6">
+                    <p className="font-display text-lg mb-1.5">{b.title}</p>
+                    <p className="text-sm text-aqua-teal/80 leading-relaxed">{b.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-            {step.visual === "doug" && <DougIllustration className="mx-auto w-full max-w-[220px]" />}
-          </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:items-end">
+              <div>
+                <h2 className="font-display text-candy-ruby text-[clamp(1.8rem,5vw,2.75rem)] leading-tight mb-4">{step.title}</h2>
+                <p className="text-candy-ruby/80 text-base md:text-lg leading-relaxed">{step.description}</p>
+              </div>
+              {step.visual === "doug" && <DougIllustration className="mx-auto w-full max-w-[220px]" />}
+            </div>
+          )}
           <div className="flex items-center justify-between gap-3 mt-8">
             <button onClick={onFinish} className="text-sm font-semibold text-candy-ruby/70 hover:text-candy-ruby">
               Skip

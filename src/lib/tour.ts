@@ -8,6 +8,29 @@ export const DASHBOARD_TOUR_STEPS: TourStep[] = [
     visual: "doug",
   },
   {
+    title: "Everything you need, one place.",
+    description: "Dougy quietly handles the busywork so you can focus on your goal.",
+    image: "/felt/doug-scooter.webp",
+    boxes: [
+      {
+        title: "We gather it all",
+        description: "Every guide, tool, video and article for your goal — no digging through a dozen sites.",
+      },
+      {
+        title: "We track the rules",
+        description: "New tax rules or allowance changes? We flag it so your plan stays current.",
+      },
+      {
+        title: "A dashboard that's actually yours",
+        description: "It updates as you make progress — tailored to whatever you're working toward.",
+      },
+      {
+        title: "Room for every goal",
+        description: "Saving, paying off debt, buying a home — track them all side by side.",
+      },
+    ],
+  },
+  {
     target: "#tour-progress",
     title: "Track your progress",
     description: "This ring fills up as you tick off checklist items — the more you complete, the closer to 100%.",

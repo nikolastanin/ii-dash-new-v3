@@ -20,8 +20,8 @@ export default function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/40 px-6" onClick={onCancel}>
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm bg-surface rounded-30 p-7 text-center">
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-ink/40 px-6 cursor-pointer" onClick={onCancel}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm cursor-auto bg-surface rounded-30 p-7 text-center">
         <p className="font-display text-xl text-candy-ruby mb-2">{title}</p>
         {description && <p className="text-sm text-inksoft leading-relaxed mb-6">{description}</p>}
         <div className="flex flex-col gap-3">

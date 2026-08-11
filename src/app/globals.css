@@ -51,12 +51,26 @@
 :root {
   scroll-behavior: auto;
   --header-h: 88px;
+  --sticky-progress-h: 0px;
 }
 
 body {
   background: var(--color-canvas);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Tailwind's preflight no longer defaults <button> to cursor: pointer, which
+   left every clickable checkbox, checklist row, card and step-box in this
+   app showing the plain arrow cursor. Restore the pointer everywhere a click
+   actually does something. */
+button:not(:disabled),
+[role="button"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+summary {
+  cursor: pointer;
 }
 
 /* Yowza is a heavy display face — tighten tracking/leading at the sizes
