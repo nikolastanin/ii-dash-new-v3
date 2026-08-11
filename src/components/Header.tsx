@@ -34,7 +34,7 @@ export default function Header({ onLogoClick, onScrollToTools, onStartOver }: Pr
     <header className="sticky top-0 z-50 bg-canvas">
       <div className="max-w-5xl mx-auto w-full px-6 py-5 flex items-center justify-between gap-4">
         <button onClick={onLogoClick} className="font-display uppercase text-lg tracking-tight flex-shrink-0">
-          meetdoug
+          dougy
         </button>
 
         <nav className="hidden sm:flex items-center gap-3">

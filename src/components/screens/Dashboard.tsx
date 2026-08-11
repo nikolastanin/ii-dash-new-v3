@@ -56,11 +56,22 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
             <div className="flex-1">
               <p className="text-xs uppercase tracking-[0.14em] font-display text-banana-med mb-4">Your plan</p>
               <h1 className="font-display text-[clamp(1.9rem,4.5vw,3rem)] text-banana-med mb-3">
-                Hi {formState.name || "there"}, here&rsquo;s where to start.
+                Hi {formState.name || "there"}, we&rsquo;ve gathered everything you need.
               </h1>
-              <p className="text-creamy/80 mb-6">
+              <p className="text-creamy/80 mb-4">
                 <span className="font-semibold text-creamy">You told us:</span> {formState.goalLabel || "Building a stronger financial future"}
               </p>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm text-creamy/90 mb-4">
+                <span>
+                  <span className="font-display text-banana-med">{STEPS.length}</span> steps
+                </span>
+                <span>
+                  <span className="font-display text-banana-med">{tools.length}</span> tools
+                </span>
+                <span>
+                  <span className="font-display text-banana-med">{guides.length}</span> guides
+                </span>
+              </div>
               <div className="flex flex-wrap gap-2.5">
                 {pills.map((p) => (
                   <span key={p} className="text-xs font-semibold bg-creamy/15 rounded-full px-4 py-1.5">
@@ -182,7 +193,7 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
 
           <div className="md:col-span-1 md:sticky md:top-28 md:self-start">
             <SectionHeading icon="highlights" label="Highlights" />
-            <p className="text-sm text-inksoft mb-5 -mt-3">A sneak peek at the tools, videos and guides picked for your steps.</p>
+            <p className="text-sm text-inksoft mb-5 -mt-3">A preview of what we&rsquo;ve already gathered for you — no digging required.</p>
             <div className="columns-2 md:columns-1 gap-5">
               {featured.slice(0, 4).map((r) => (
                 <HighlightCard key={r.id} resource={r} />
@@ -193,7 +204,10 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
 
         {/* Tools */}
         <div className="mb-12 rounded-[2rem] bg-candy-light p-8 md:p-10" id="tools-section">
-          <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.25rem)] text-candy-ruby mb-8">Tools for you</h2>
+          <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.25rem)] text-candy-ruby mb-2">Tools for you</h2>
+          <p className="text-sm text-candy-ruby/65 mb-8 max-w-xl">
+            Calculators and tools we&rsquo;ve picked out, so you don&rsquo;t have to compare a dozen options yourself.
+          </p>
           <div className="-mx-8 md:-mx-10 px-8 md:px-10 flex gap-5 overflow-x-auto scrollbar-hide pb-2">
             {tools.map((t) => (
               <ToolCard key={t.id} tool={t} />
@@ -208,7 +222,11 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
             className="pointer-events-none absolute -bottom-20 -left-24 w-96 opacity-40"
           />
           <div className="relative">
-            <h2 className="font-display text-[clamp(2rem,5vw,3.25rem)] text-green-woods mb-10">Guides</h2>
+            <h2 className="font-display text-[clamp(2rem,5vw,3.25rem)] text-green-woods mb-2">Guides</h2>
+            <p className="text-sm text-green-woods/70 mb-10 max-w-xl">
+              Everything we think is worth reading for this goal — gathered here instead of scattered across the
+              internet.
+            </p>
             <ul className="grid gap-5 md:grid-cols-2">
               {guides.map((g) => (
                 <li key={g.id}>
