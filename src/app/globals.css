@@ -168,6 +168,55 @@ body {
   animation: toast-in 0.3s ease-out;
 }
 
+.logo-eye {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes logo-blink {
+  0%,
+  20%,
+  40%,
+  100% {
+    transform: scaleY(1);
+  }
+  10%,
+  30% {
+    transform: scaleY(0.1);
+  }
+}
+.animate-logo-blink {
+  animation: logo-blink 1.4s ease-in-out;
+}
+
+/* Cozy little shiver — plays once, either alongside a blink (keyed/retriggered
+   from JS) or on cursor hover (plain CSS :hover, no JS needed). */
+@keyframes logo-jitter {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(-1px, 0) rotate(-3deg);
+  }
+  40% {
+    transform: translate(1px, -1px) rotate(3deg);
+  }
+  60% {
+    transform: translate(-1px, 1px) rotate(-2deg);
+  }
+  80% {
+    transform: translate(1px, 0) rotate(2deg);
+  }
+}
+.animate-logo-jitter {
+  animation: logo-jitter 0.5s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-logo-jitter {
+    animation: none;
+  }
+}
+
 .phase-circle.done {
   background: var(--color-green-woods);
   color: var(--color-banana-med);

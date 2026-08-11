@@ -5,6 +5,8 @@ import type { GoalInstance, NotificationItem, QuickFormState } from "@/lib/types
 import { GOAL_TEMPLATES, matchTemplateId } from "@/lib/data";
 import Header from "@/components/Header";
 import Toast from "@/components/Toast";
+import Tour from "@/components/Tour";
+import { DASHBOARD_TOUR_STEPS } from "@/lib/tour";
 import Landing from "@/components/screens/Landing";
 import QuickForm from "@/components/screens/QuickForm";
 import Chat from "@/components/screens/Chat";
@@ -45,6 +47,9 @@ export default function App() {
   const [currentDetailStepId, setCurrentDetailStepId] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [toast, setToast] = useState<{ id: string; text: string } | null>(null);
+  const [tourActive, setTourActive] = useState(false);
+  const [hasSeenIntro, setHasSeenIntro] = useState(false);
+  const [blinkKey, setBlinkKey] = useState(0);
 
   useEffect(() => {
     if (!toast) return;
@@ -87,7 +92,15 @@ export default function App() {
       setGoals((prev) => [...prev, newGoal]);
       setActiveGoalId(newGoal.id);
       setScreen("dashboard");
-      pushPointsNotification(GOAL_CREATION_POINTS, "new goal created!");
+      if (!hasSeenIntro) {
+        // Defer the toast until the intro tour finishes — the tour's
+        // blurred overlay sits above it, so showing it now means it just
+        // silently expires unseen underneath.
+        setHasSeenIntro(true);
+        setTourActive(true);
+      } else {
+        pushPointsNotification(GOAL_CREATION_POINTS, "new goal created!");
+      }
     }, 1200);
   }
 
@@ -140,6 +153,9 @@ export default function App() {
     };
     setNotifications((prev) => [notification, ...prev].slice(0, 20));
     setToast({ id: notification.id, text: notification.text });
+    // Every point-earning moment gets a little celebratory blink from the
+    // logo mascot, not just finishing the intro tour.
+    setBlinkKey((k) => k + 1);
   }
 
   function markNotificationsRead() {
@@ -163,6 +179,8 @@ export default function App() {
     setCurrentDetailStepId(null);
     setNotifications([]);
     setToast(null);
+    setTourActive(false);
+    setHasSeenIntro(false);
     setScreen("landing");
   }
 
@@ -201,8 +219,17 @@ export default function App() {
         onOpenGoals={openGoals}
         notifications={notifications}
         onMarkNotificationsRead={markNotificationsRead}
+        blinkKey={blinkKey}
       />
       <Toast toast={toast} />
+      <Tour
+        steps={DASHBOARD_TOUR_STEPS}
+        active={tourActive}
+        onFinish={() => {
+          setTourActive(false);
+          pushPointsNotification(GOAL_CREATION_POINTS, "new goal created!");
+        }}
+      />
 
       {screen === "landing" && <Landing onStartForm={() => setScreen("quickform")} onStartChat={() => setScreen("chat")} />}
 
@@ -238,6 +265,7 @@ export default function App() {
             setScreen("step-detail");
           }}
           onToggleStepDone={toggleStepDone}
+          disableSticky={tourActive}
         />
       )}
 
@@ -255,6 +283,7 @@ export default function App() {
           onToggleSaved={toggleSaved}
           onBack={() => setScreen("dashboard")}
           onToggleDone={() => toggleStepDone(currentDetailStepId)}
+          disableSticky={tourActive}
         />
       )}
 

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RESOURCES } from "@/lib/data";
 import type { NotificationItem } from "@/lib/types";
+import MeetDougModal from "@/components/MeetDougModal";
 
 type Props = {
   onLogoClick: () => void;
@@ -12,6 +13,10 @@ type Props = {
   onOpenGoals: () => void;
   notifications: NotificationItem[];
   onMarkNotificationsRead: () => void;
+  // Bumped whenever the intro tour finishes — used as a key to remount the
+  // eye and replay its blink animation. Starts at 0 so it never blinks on
+  // first page load, only after an actual "finish" event.
+  blinkKey?: number;
 };
 
 export default function Header({
@@ -22,9 +27,11 @@ export default function Header({
   onOpenGoals,
   notifications,
   onMarkNotificationsRead,
+  blinkKey = 0,
 }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
+  const [meetDougOpen, setMeetDougOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const guides = Object.values(RESOURCES).filter((r) => r.type === "guide");
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -73,12 +80,43 @@ export default function Header({
   return (
     <header ref={headerRef} className="sticky top-0 z-50 bg-canvas">
       <div className="max-w-5xl mx-auto w-full px-6 py-5 flex items-center justify-between gap-4">
-        <button onClick={onLogoClick} className="font-display uppercase text-lg tracking-tight flex-shrink-0">
-         <img src="https://love-logic.github.io/mortgageinsiders/icon.svg" alt="" /> dougy
+        <button onClick={onLogoClick} className="font-display uppercase text-lg tracking-tight flex-shrink-0 flex flex-col items-center gap-1">
+          <svg
+            key={blinkKey}
+            width="44"
+            height="44"
+            viewBox="0 0 408.2 449.7"
+            role="button"
+            aria-label="Meet Dougy"
+            onClick={(e) => {
+              e.stopPropagation();
+              setMeetDougOpen(true);
+            }}
+            className={`cursor-pointer hover:animate-logo-jitter ${blinkKey > 0 ? "animate-logo-jitter" : ""}`}
+          >
+            <path fill="#540329" d="M408.2,244.8c0,113.2-91.4,204.9-204.1,204.9S0,358,0,244.8,91.4,39.9,204.1,39.9s204.1,91.7,204.1,204.9" />
+            <path
+              fill="#ffbfd9"
+              d="M377.4,86.3c-3.3-17.7-13-34.5-30.9-18.9-62.3,54.3-195.2,6.9-253.3,86.2-29.4,40.1-37.7,90.6-20.4,136.5,14.7,38.9,41,70.4,78.1,87.8,27.9,13.1,58,14.4,87.7,9.2,29.4-7.9,53.8-22,73.9-45.4,10.9-12.6,20-26.2,27.6-40.6,19.3-36.3,29.1-77.3,34.9-118.4,4.4-31.3,8.1-65.1,2.4-96.5"
+            />
+            <path fill="#540329" d="M401.3,31.2c5.9,22.3-7.4,45.2-29.7,51.1-22.3,5.9-45.1-7.5-50.9-29.8-5.9-22.3,7.4-45.2,29.7-51.1,22.3-5.9,45,7.5,50.9,29.8" />
+            <g key={blinkKey} className={blinkKey > 0 ? "logo-eye animate-logo-blink" : "logo-eye"}>
+              <path fill="#fff" d="M250.2,190.1c0,29.8-24,53.9-53.6,53.9s-53.6-24.1-53.6-53.9,24-53.9,53.6-53.9,53.6,24.1,53.6,53.9" />
+              <path
+                fill="#540329"
+                d="M242.3,179.6c0,16.6-13.3,29.9-29.9,29.9s-29.9-13.5-29.9-29.9,13.3-29.9,29.9-29.9,29.9,13.5,29.9,29.9"
+              />
+            </g>
+          </svg>
+          dougy
         </button>
 
         <nav className="hidden sm:flex items-center gap-3">
-          <button onClick={onOpenGoals} className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold">
+          <button
+            id="tour-goals-btn"
+            onClick={onOpenGoals}
+            className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold"
+          >
             Goals
           </button>
           <div className="relative group nav-group">
@@ -101,7 +139,7 @@ export default function Header({
           <button onClick={onOpenLibrary} className="bg-surface text-ink border-2 border-ink/10 px-5 py-3 text-sm rounded-full font-semibold">
             Resources
           </button>
-          <div className="relative nav-group">
+          <div id="tour-bell-btn" className="relative nav-group">
             <button
               onClick={() => {
                 setBellOpen((v) => !v);
@@ -207,6 +245,8 @@ export default function Header({
           </div>
         </div>
       )}
+
+      <MeetDougModal open={meetDougOpen} onClose={() => setMeetDougOpen(false)} />
     </header>
   );
 }

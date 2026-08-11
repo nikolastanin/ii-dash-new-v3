@@ -8,15 +8,20 @@ type Props = {
   steps: Step[];
   doneSteps: Set<string>;
   doneItems: Set<string>;
+  // Stickiness creates its own stacking context, which can end up painting
+  // above a fixed-position overlay (e.g. the intro tour) regardless of
+  // z-index. Simplest fix: drop out of sticky positioning entirely while
+  // one of those overlays is active.
+  disableSticky?: boolean;
 };
 
-export default function StickyProgress({ phases, steps, doneSteps, doneItems }: Props) {
+export default function StickyProgress({ phases, steps, doneSteps, doneItems, disableSticky = false }: Props) {
   const label = phases[currentPhaseIndex(phases, steps, doneSteps)]?.label ?? "Your journey";
   const pct = goalProgressPct(steps, doneItems);
   return (
     <div
-      className="sticky z-40 rounded-b-[2rem] bg-banana-light px-8 py-4 md:px-10 mb-8 flex items-center gap-5"
-      style={{ top: "var(--header-h)" }}
+      className={`${disableSticky ? "relative" : "sticky"} z-40 rounded-b-[2rem] bg-banana-light px-8 py-4 md:px-10 mb-8 flex items-center gap-5`}
+      style={disableSticky ? undefined : { top: "var(--header-h)" }}
     >
       <div className="flex-1">
         <div className="flex items-center justify-between gap-4 text-xs font-semibold text-candy-ruby/80 mb-2">

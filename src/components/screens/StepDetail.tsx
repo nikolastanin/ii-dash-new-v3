@@ -20,6 +20,7 @@ type Props = {
   onToggleSaved: (id: string) => void;
   onBack: () => void;
   onToggleDone: () => void;
+  disableSticky?: boolean;
 };
 
 export default function StepDetail({
@@ -34,6 +35,7 @@ export default function StepDetail({
   onToggleSaved,
   onBack,
   onToggleDone,
+  disableSticky = false,
 }: Props) {
   const step = steps.find((s) => s.id === stepId);
   const [expanded, setExpanded] = useState<number | null>(0);
@@ -54,7 +56,7 @@ export default function StepDetail({
       </div>
 
       <main className="max-w-5xl mx-auto w-full px-6 pb-24">
-        <StickyProgress phases={phases} steps={steps} doneSteps={doneSteps} doneItems={doneItems} />
+        <StickyProgress phases={phases} steps={steps} doneSteps={doneSteps} doneItems={doneItems} disableSticky={disableSticky} />
 
         <div className="flex items-center gap-3.5 mt-6 mb-3">
           <span className="w-11 h-11 rounded-full bg-brand text-black flex items-center justify-center font-display flex-shrink-0">{step.n}</span>

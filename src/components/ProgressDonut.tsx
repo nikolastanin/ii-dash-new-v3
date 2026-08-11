@@ -5,6 +5,7 @@ type Props = {
   valueClassName?: string;
   caption?: string;
   captionClassName?: string;
+  id?: string;
 };
 
 export default function ProgressDonut({
@@ -14,12 +15,13 @@ export default function ProgressDonut({
   valueClassName = "font-display text-banana-med",
   caption,
   captionClassName = "text-banana-med/70",
+  id,
 }: Props) {
   const r = 50 - strokeWidth / 2;
   const circ = 2 * Math.PI * r;
 
   return (
-    <div className={`relative flex-shrink-0 ${className}`}>
+    <div id={id} className={`relative flex-shrink-0 ${className}`}>
       <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
         <circle cx="50" cy="50" r={r} fill="none" stroke="var(--color-candy-med)" strokeWidth={strokeWidth} />
         <circle

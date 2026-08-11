@@ -22,6 +22,7 @@ type Props = {
   onToggleSaved: (id: string) => void;
   onOpenStep: (id: string) => void;
   onToggleStepDone: (id: string) => void;
+  disableSticky?: boolean;
 };
 
 const TASK_TONES = ["bg-banana-light", "bg-candy-light", "bg-green-light", "bg-aqua-light"];
@@ -84,6 +85,7 @@ export default function Dashboard({
   onToggleSaved,
   onOpenStep,
   onToggleStepDone,
+  disableSticky = false,
 }: Props) {
   const [alertDismissed, setAlertDismissed] = useState(false);
   const [activeAlertIndex, setActiveAlertIndex] = useState(0);
@@ -200,6 +202,7 @@ export default function Dashboard({
             </div>
 
             <ProgressDonut
+              id="tour-progress"
               pct={progressPct}
               className="mx-auto md:mx-0 w-full max-w-[9rem] md:max-w-[11rem] aspect-square"
               caption="PROGRESS"
@@ -211,7 +214,7 @@ export default function Dashboard({
 
         {/* Today's tasks */}
         {todaysTasks.length > 0 && (
-          <div className="mb-8">
+          <div className="mb-8" id="tour-todays-tasks">
             <div className="flex items-center justify-between gap-4 mb-5">
               <h2 className="font-display text-[clamp(1.6rem,3.5vw,2.25rem)] text-candy-ruby">Today&rsquo;s tasks</h2>
               <button
@@ -228,15 +231,32 @@ export default function Dashboard({
                   <button
                     key={task.key}
                     onClick={() => onOpenStep(task.step.id)}
-                    className={`relative text-left w-64 flex-shrink-0 rounded-[1.5rem] ${TASK_TONES[i % TASK_TONES.length]} border-2 border-transparent hover:border-ink/40 transition-colors p-6`}
+                    className={`group relative text-left w-64 flex-shrink-0 rounded-[1.5rem] ${TASK_TONES[i % TASK_TONES.length]} border-2 border-transparent hover:border-ink/40 transition-colors pt-11 px-6 pb-6`}
                   >
-                    {isDone && (
-                      <span className="absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-white shadow-sm">
+                    <span className="absolute top-3 left-3 grid size-7 place-items-center rounded-full bg-white shadow-sm">
+                      <span className="font-display text-xs text-candy-ruby">{i + 1}.</span>
+                    </span>
+                    <span
+                      className={`absolute top-3 right-3 grid size-7 place-items-center rounded-full bg-white shadow-sm border-2 transition-colors ${
+                        isDone ? "border-transparent" : "border-transparent group-hover:border-candy-ruby"
+                      }`}
+                    >
+                      {isDone ? (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-green-woods">
                           <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
-                      </span>
-                    )}
+                      ) : (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" className="text-candy-ruby">
+                          <path
+                            d="M7 2h10M7 22h10M8 2c0 4.5 3 6.2 4 6.2S16 6.5 16 2M8 22c0-4.5 3-6.2 4-6.2s4 1.7 4 6.2"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </span>
                     <span className={`tag tag-${task.step.tag.toLowerCase()} inline-block mb-3`}>{task.step.tag}</span>
                     <p className={`font-semibold text-sm text-candy-ruby leading-relaxed mb-3 ${isDone ? "line-through opacity-60" : ""}`}>
                       {task.text}
@@ -272,7 +292,7 @@ export default function Dashboard({
           </div>
         </div>
 
-        <StickyProgress phases={phases} steps={steps} doneSteps={doneSteps} doneItems={doneItems} />
+        <StickyProgress phases={phases} steps={steps} doneSteps={doneSteps} doneItems={doneItems} disableSticky={disableSticky} />
 
         {/* Plan + Highlights */}
         <div className="md:grid md:grid-cols-3 md:gap-9 md:items-start mb-12">
