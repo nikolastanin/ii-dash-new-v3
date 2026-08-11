@@ -93,7 +93,7 @@ export default function StepDetail({
             )}
 
             {relatedGuide && (
-              <div>
+              <div className="hidden md:block">
                 <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Read next</p>
                 <GuideCard
                   guide={relatedGuide}
@@ -213,6 +213,18 @@ export default function StepDetail({
             </div>
           </div>
         </div>
+
+        {relatedGuide && (
+          <div className="md:hidden mt-10">
+            <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Read next</p>
+            <GuideCard
+              guide={relatedGuide}
+              saved={savedIds.has(relatedGuide.id)}
+              onToggleSaved={() => onToggleSaved(relatedGuide.id)}
+              onOpenResource={onOpenResource}
+            />
+          </div>
+        )}
       </main>
 
       <ConfirmDialog
