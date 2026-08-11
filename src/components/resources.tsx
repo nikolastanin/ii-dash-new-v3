@@ -46,9 +46,28 @@ export function ResourceRow({ resource }: { resource: Resource }) {
       rel="noreferrer"
       className="flex items-center gap-3 bg-canvas rounded-20 px-4 py-3 hover:bg-brandlight/50 transition-colors"
     >
-      <span className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: color }}>
-        <ResourceIcon type={resource.type} className={iconTextClass} />
-      </span>
+      {resource.type === "video" ? (
+        <span className="relative w-16 h-9 rounded-md overflow-hidden flex-shrink-0 bg-canvas">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://love-logic.github.io/mortgageinsiders/og-card.png"
+            alt=""
+            className="w-full h-full object-cover"
+          />
+          <span className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <span className="w-5 h-5 rounded-full bg-white/90 flex items-center justify-center">
+              <ResourceIcon type="video" className="text-black" />
+            </span>
+          </span>
+        </span>
+      ) : (
+        <span
+          className="w-16 h-9 rounded-md flex items-center justify-center flex-shrink-0"
+          style={{ backgroundColor: color }}
+        >
+          <ResourceIcon type={resource.type} className={iconTextClass} />
+        </span>
+      )}
       <span className="flex-1 min-w-0">
         <span className="block text-[11px] font-semibold uppercase tracking-wide text-inksoft">{typeLabel}</span>
         <span className="block text-sm font-semibold truncate">{resource.title}</span>
@@ -96,23 +115,22 @@ export function HighlightCard({ resource }: { resource: Resource }) {
   const typeLabel = RESOURCE_TYPE_LABELS[resource.type] || "Resource";
 
   let cover: ReactNode = null;
-  if (resource.type === "tool") {
+  if (resource.type === "video") {
     cover = (
-      <div className="bg-ink text-white py-9 flex items-center justify-center gap-2.5">
-        <span className="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center font-display text-sm">
-          {resource.provider.charAt(0)}
-        </span>
-        <span className="font-display uppercase tracking-wide">{resource.provider}</span>
-      </div>
-    );
-  } else if (resource.type === "video") {
-    cover = (
-      <div className="py-11 flex items-center justify-center" style={{ backgroundColor: color }}>
-        <span className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-white">
-            <path d="M10 8.7v6.6l5.5-3.3-5.5-3.3Z" fill="currentColor" />
-          </svg>
-        </span>
+      <div className="relative h-32 overflow-hidden flex-shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://love-logic.github.io/mortgageinsiders/og-card.png"
+          alt=""
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+          <span className="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-black">
+              <path d="M10 8.7v6.6l5.5-3.3-5.5-3.3Z" fill="currentColor" />
+            </svg>
+          </span>
+        </div>
       </div>
     );
   } else if (resource.type === "guide") {
@@ -130,9 +148,10 @@ export function HighlightCard({ resource }: { resource: Resource }) {
   if (resource.type === "tool") {
     body = (
       <>
-        <p className="font-semibold text-sm mb-1.5">{resource.title}</p>
-        <p className="text-sm text-inksoft mb-4 leading-relaxed line-clamp-3">{resource.description}</p>
-        <span className="inline-block bg-ink text-white rounded-28 px-4 py-2 text-xs font-display uppercase tracking-wide">
+        <span className="font-sans text-xs font-semibold text-green-woods">Free tool</span>
+        <p className="mt-3 font-display text-lg text-candy-ruby">{resource.title}</p>
+        <p className="mt-2 text-xs text-candy-ruby/55 leading-relaxed line-clamp-2">{resource.description}</p>
+        <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-woods text-banana-med px-4 py-2 text-xs font-display uppercase tracking-wide">
           {resource.cta} →
         </span>
       </>

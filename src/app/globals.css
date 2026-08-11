@@ -140,20 +140,6 @@ body {
   animation: spin-slow 0.9s linear infinite;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: var(--color-line);
-  transition: background 0.2s;
-}
-.dot.active {
-  background: var(--color-brand);
-}
-.dot.filled {
-  background: color-mix(in srgb, var(--color-candy-ruby) 35%, transparent);
-}
-
 .phase-circle.done {
   background: var(--color-green-woods);
   color: var(--color-banana-med);

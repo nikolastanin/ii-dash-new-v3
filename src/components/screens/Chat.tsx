@@ -74,19 +74,19 @@ export default function Chat({ onBack, onUpdateField, onBuildPlan }: Props) {
 
   return (
     <section className="min-h-screen flex flex-col">
-      <div className="max-w-xl mx-auto w-full px-6 pt-7 pb-5 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto w-full px-6 pt-7 pb-5 flex items-center justify-between">
         <button onClick={onBack} className="text-sm text-inksoft hover:text-ink flex items-center gap-1.5">
           <span aria-hidden="true">←</span> Back
         </button>
         <span className="text-xs text-inksoft">Chat with our assistant</span>
       </div>
 
-      <main className="flex-1 max-w-xl mx-auto w-full px-6 flex flex-col">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-6 flex flex-col">
         <div ref={logRef} className="flex-1 flex flex-col gap-3.5 py-2 overflow-y-auto">
           {messages.map((m, i) => (
             <div key={i} className={`flex ${m.who === "user" ? "justify-end" : "justify-start"}`}>
               <div
-                className={`${m.who === "user" ? "chat-bubble-user" : "chat-bubble-assistant border-2 border-ink/10"} max-w-[80%] rounded-20 px-5 py-3.5 text-[15px] leading-snug`}
+                className={`${m.who === "user" ? "chat-bubble-user" : "chat-bubble-assistant"} max-w-[80%] rounded-20 px-5 py-3.5 text-[15px] leading-snug`}
               >
                 {m.text}
               </div>
@@ -109,10 +109,10 @@ export default function Chat({ onBack, onUpdateField, onBuildPlan }: Props) {
             <button
               onClick={sendChat}
               aria-label="Send"
-              className="w-11 h-11 rounded-full bg-ink text-white flex items-center justify-center hover:opacity-90 transition-opacity flex-shrink-0"
+              className="w-11 h-11 rounded-full bg-green-woods text-banana-med flex items-center justify-center hover:opacity-90 transition-opacity flex-shrink-0"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M5 12h14M13 6l6 6-6 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
           </div>

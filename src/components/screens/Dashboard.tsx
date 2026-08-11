@@ -14,6 +14,9 @@ type Props = {
   onToggleStepDone: (n: number) => void;
 };
 
+const DONUT_R = 78;
+const DONUT_CIRC = 2 * Math.PI * DONUT_R;
+
 function collectStepResourceIds(step: (typeof STEPS)[number]) {
   const ids = new Set<string>();
   step.checklist.forEach((item) => {
@@ -29,35 +32,67 @@ export default function Dashboard({ formState, doneSteps, onOpenStep, onToggleSt
 
   const pills = [formState.timeframe, formState.experience, formState.risk].filter(Boolean);
 
+  const progressPct = STEPS.length ? doneSteps.size / STEPS.length : 0;
+
   const currentIndex = useMemo(() => currentPhaseIndex(doneSteps), [doneSteps]);
 
-  const featured = Object.values(RESOURCES).filter((r) => r.featured);
+  // Guides already get their own dedicated showcase further down the page,
+  // so Highlights sticks to tools and videos — the resources that otherwise
+  // only surface buried inside a step's checklist.
+  const featured = Object.values(RESOURCES).filter((r) => r.featured && r.type !== "guide");
   const tools = Object.values(RESOURCES).filter((r): r is ToolResource => r.type === "tool");
   const guides = Object.values(RESOURCES).filter((r): r is GuideResource => r.type === "guide");
 
   return (
     <section className="min-h-screen">
-      <main className="max-w-4xl mx-auto w-full px-6 pb-24">
+      <main className="max-w-5xl mx-auto w-full px-6 pb-24">
         {/* Hero */}
         <div className="relative overflow-hidden rounded-[2.5rem] bg-green-woods px-8 py-12 md:rounded-[3.5rem] md:px-12 md:py-16 text-creamy mt-6 mb-8">
           <Scallop
             fill="var(--color-green-med)"
             className="pointer-events-none absolute -bottom-16 -right-16 w-64 opacity-25"
           />
-          <div className="relative">
-            <p className="text-xs uppercase tracking-[0.14em] font-display text-banana-med mb-4">Your plan</p>
-            <h1 className="font-display text-[clamp(1.9rem,4.5vw,3rem)] text-banana-med mb-3">
-              Hi {formState.name || "there"}, here&rsquo;s where to start.
-            </h1>
-            <p className="text-creamy/80 mb-6">
-              <span className="font-semibold text-creamy">You told us:</span> {formState.goalLabel || "Building a stronger financial future"}
-            </p>
-            <div className="flex flex-wrap gap-2.5">
-              {pills.map((p) => (
-                <span key={p} className="text-xs font-semibold bg-creamy/15 rounded-full px-4 py-1.5">
-                  {p}
-                </span>
-              ))}
+          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+            <div className="flex-1">
+              <p className="text-xs uppercase tracking-[0.14em] font-display text-banana-med mb-4">Your plan</p>
+              <h1 className="font-display text-[clamp(1.9rem,4.5vw,3rem)] text-banana-med mb-3">
+                Hi {formState.name || "there"}, here&rsquo;s where to start.
+              </h1>
+              <p className="text-creamy/80 mb-6">
+                <span className="font-semibold text-creamy">You told us:</span> {formState.goalLabel || "Building a stronger financial future"}
+              </p>
+              <div className="flex flex-wrap gap-2.5">
+                {pills.map((p) => (
+                  <span key={p} className="text-xs font-semibold bg-creamy/15 rounded-full px-4 py-1.5">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative mx-auto md:mx-0 w-full max-w-[9rem] md:max-w-[11rem] flex-shrink-0">
+              <svg viewBox="0 0 200 200" className="w-full -rotate-90">
+                <circle cx="100" cy="100" r="78" fill="none" stroke="var(--color-candy-med)" strokeWidth="22" />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="78"
+                  fill="none"
+                  stroke="var(--color-green-med)"
+                  strokeWidth="22"
+                  strokeLinecap="round"
+                  strokeDasharray={`${progressPct * DONUT_CIRC} ${DONUT_CIRC}`}
+                  className="transition-[stroke-dasharray] duration-300 ease-out"
+                />
+              </svg>
+              <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
+                <div>
+                  <p className="font-sans text-xs font-semibold text-creamy/70">PROGRESS</p>
+                  <p className="font-display text-[clamp(1.5rem,4vw,2rem)] text-banana-med">
+                    {Math.round(progressPct * 100)}%
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

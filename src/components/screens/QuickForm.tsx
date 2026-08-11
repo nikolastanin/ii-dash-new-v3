@@ -91,84 +91,94 @@ export default function QuickForm({ formState, onBack, onSubmitName, onSelectSin
 
   return (
     <section className="min-h-screen flex flex-col">
-      <div className="max-w-xl mx-auto w-full px-6 pt-7 pb-3 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto w-full px-6 pt-7 pb-3">
         <button onClick={onBack} className="text-sm text-inksoft hover:text-ink flex items-center gap-1.5">
           <span aria-hidden="true">←</span> Back
         </button>
-        <span className="text-xs text-inksoft">
-          Step {step} of {TOTAL_STEPS}
-        </span>
       </div>
 
-      <main className="flex-1 max-w-xl mx-auto w-full px-6 py-10 flex flex-col">
-        <div className="flex items-center gap-2.5 mb-12">
-          {Array.from({ length: TOTAL_STEPS }, (_, i) => i + 1).map((i) => (
-            <span key={i} className={`dot ${i === step ? "active" : i < step ? "filled" : ""}`} />
-          ))}
-        </div>
-
-        {step === 1 && (
-          <div>
-            <h2 className="font-display uppercase text-2xl mb-3">What should we call you?</h2>
-            <p className="text-inksoft mb-8">We&rsquo;ll use this on your plan — nothing else.</p>
-            <input
-              type="text"
-              placeholder="Your first name"
-              autoComplete="given-name"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
-              className="w-full bg-surface rounded-20 border-2 border-ink/15 px-5 py-4 text-lg outline-none mb-9 focus:border-green-woods transition-colors"
+      <main className="flex-1 max-w-5xl mx-auto w-full px-6 pb-10 flex flex-col">
+        <div className="rounded-[2.5rem] bg-aqua-light px-6 py-10 md:rounded-[3rem] md:px-10 md:py-12">
+          <div className="flex items-baseline justify-between font-sans text-sm font-semibold text-aqua-teal">
+            <span>Your plan</span>
+            <span>
+              Step {step} of {TOTAL_STEPS}
+            </span>
+          </div>
+          <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-aqua-teal/15">
+            <div
+              className="h-full rounded-full bg-green-woods transition-[width] duration-300 ease-out"
+              style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
             />
-            <Button
-              onClick={() => {
-                onSubmitName(nameInput.trim() || "there");
-                setStep(2);
-              }}
-            >
-              Continue
-            </Button>
           </div>
-        )}
 
-        {singleStep && (
-          <div>
-            <h2 className="font-display uppercase text-2xl mb-8">{singleStep.question}</h2>
-            <div className="flex flex-col gap-3.5">
-              {singleStep.options.map((opt) => (
-                <button
-                  key={opt.value}
-                  className={`option-pill text-left bg-surface border-2 border-ink/15 rounded-20 px-6 py-4 hover:border-ink/40 transition-colors ${
-                    formState[singleStep.field] === opt.value ? "selected" : ""
-                  }`}
-                  onClick={() => selectAndAdvance(singleStep.field, opt.value)}
+          <div className="mt-8 rounded-[2rem] bg-creamy p-7 md:p-10">
+            {step === 1 && (
+              <div>
+                <h2 className="font-display text-[clamp(2rem,5vw,3rem)] text-candy-ruby mb-3">What should we call you?</h2>
+                <p className="text-candy-ruby/70 mb-8">We&rsquo;ll use this on your plan — nothing else.</p>
+                <div className="flex items-center gap-3 rounded-full border-2 border-ink/15 px-6 focus-within:border-green-woods transition-colors mb-9">
+                  <input
+                    type="text"
+                    placeholder="Your first name"
+                    autoComplete="given-name"
+                    value={nameInput}
+                    onChange={(e) => setNameInput(e.target.value)}
+                    className="h-16 w-full bg-transparent font-display text-2xl text-candy-ruby placeholder:text-candy-ruby/40 outline-none"
+                  />
+                </div>
+                <Button
+                  onClick={() => {
+                    onSubmitName(nameInput.trim() || "there");
+                    setStep(2);
+                  }}
                 >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+                  Continue
+                </Button>
+              </div>
+            )}
 
-        {step === 7 && (
-          <div>
-            <h2 className="font-display uppercase text-2xl mb-3">Anything you&rsquo;re specifically worried about?</h2>
-            <p className="text-inksoft mb-8">Pick as many as apply.</p>
-            <div className="flex flex-wrap gap-2.5 mb-10">
-              {WORRIES.map((w) => (
-                <button
-                  key={w}
-                  className={`chip bg-surface border-2 border-ink/15 rounded-full px-5 py-2.5 text-sm hover:border-ink/40 transition-colors ${
-                    formState.worries.includes(w) ? "selected" : ""
-                  }`}
-                  onClick={() => onToggleChip(w)}
-                >
-                  {w}
-                </button>
-              ))}
-            </div>
-            <Button onClick={onBuildPlan}>Build my plan</Button>
+            {singleStep && (
+              <div>
+                <h2 className="font-display text-[clamp(2rem,5vw,3rem)] text-candy-ruby mb-8">{singleStep.question}</h2>
+                <div className="flex flex-col gap-3.5">
+                  {singleStep.options.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={`option-pill text-left bg-surface border-2 border-ink/15 rounded-20 px-6 py-4 hover:border-ink/40 transition-colors ${
+                        formState[singleStep.field] === opt.value ? "selected" : ""
+                      }`}
+                      onClick={() => selectAndAdvance(singleStep.field, opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 7 && (
+              <div>
+                <h2 className="font-display text-[clamp(2rem,5vw,3rem)] text-candy-ruby mb-3">Anything you&rsquo;re specifically worried about?</h2>
+                <p className="text-candy-ruby/70 mb-8">Pick as many as apply.</p>
+                <div className="flex flex-wrap gap-3 mb-10">
+                  {WORRIES.map((w) => (
+                    <button
+                      key={w}
+                      className={`chip bg-surface border-2 border-ink/15 rounded-full h-12 px-6 font-display text-lg hover:border-ink/40 transition-colors ${
+                        formState.worries.includes(w) ? "selected" : ""
+                      }`}
+                      onClick={() => onToggleChip(w)}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+                <Button onClick={onBuildPlan}>Build my plan</Button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </main>
     </section>
   );
