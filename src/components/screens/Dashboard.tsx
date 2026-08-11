@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { GLOBAL_ALERTS, GOAL_ALERTS, RESOURCES, currentPhaseIndex, goalProgressPct } from "@/lib/data";
-import type { ChecklistItem, GuideResource, Phase, Step, ToolResource } from "@/lib/types";
+import type { ChecklistItem, GuideResource, Phase, Resource, Step, ToolResource } from "@/lib/types";
 import { HighlightCard, ResourceBubbleStack, ToolCard } from "@/components/resources";
 import { Scallop } from "@/components/shapes";
 import SaveButton from "@/components/SaveButton";
@@ -22,6 +22,8 @@ type Props = {
   onToggleSaved: (id: string) => void;
   onOpenStep: (id: string) => void;
   onToggleStepDone: (id: string) => void;
+  onOpenInternal: (screen: string) => void;
+  onOpenResource: (resource: Resource) => void;
   disableSticky?: boolean;
 };
 
@@ -85,6 +87,8 @@ export default function Dashboard({
   onToggleSaved,
   onOpenStep,
   onToggleStepDone,
+  onOpenInternal,
+  onOpenResource,
   disableSticky = false,
 }: Props) {
   const [alertDismissed, setAlertDismissed] = useState(false);
@@ -132,7 +136,13 @@ export default function Dashboard({
   // so Highlights sticks to tools and videos — the resources that otherwise
   // only surface buried inside a step's checklist.
   const featured = goalResources.filter((r) => r.featured && r.type !== "guide");
-  const tools = goalResources.filter((r): r is ToolResource => r.type === "tool");
+  // The two calculators are universally useful, not goal-specific, so they
+  // always lead the list regardless of which goal is active.
+  const CALCULATOR_IDS = ["tool-mortgage-calculator", "tool-remortgage-calculator"];
+  const tools = [
+    ...(CALCULATOR_IDS.map((id) => RESOURCES[id]) as ToolResource[]),
+    ...goalResources.filter((r): r is ToolResource => r.type === "tool" && !CALCULATOR_IDS.includes(r.id)),
+  ];
   const guides = goalResources.filter((r): r is GuideResource => r.type === "guide");
 
   return (
@@ -347,6 +357,8 @@ export default function Dashboard({
                   className="mb-5"
                   saved={savedIds.has(r.id)}
                   onToggleSaved={() => onToggleSaved(r.id)}
+                  onOpenResource={onOpenResource}
+                  onOpenInternal={onOpenInternal}
                 />
               ))}
             </div>
@@ -362,7 +374,14 @@ export default function Dashboard({
           {tools.length ? (
             <div className="-mx-8 md:-mx-10 px-8 md:px-10 flex gap-5 overflow-x-auto scrollbar-hide pb-2">
               {tools.map((t) => (
-                <ToolCard key={t.id} tool={t} saved={savedIds.has(t.id)} onToggleSaved={() => onToggleSaved(t.id)} />
+                <ToolCard
+                  key={t.id}
+                  tool={t}
+                  saved={savedIds.has(t.id)}
+                  onToggleSaved={() => onToggleSaved(t.id)}
+                  onOpenInternal={onOpenInternal}
+                  onOpenResource={onOpenResource}
+                />
               ))}
             </div>
           ) : (

@@ -3,14 +3,17 @@
 import { useMemo, useState } from "react";
 import { RESOURCES } from "@/lib/data";
 import { HighlightCard } from "@/components/resources";
+import type { Resource } from "@/lib/types";
 
 type Props = {
   savedIds: Set<string>;
   onToggleSaved: (id: string) => void;
+  onOpenResource: (resource: Resource) => void;
+  onOpenInternal: (screen: string) => void;
   onBack: () => void;
 };
 
-export default function ResourceLibrary({ savedIds, onToggleSaved, onBack }: Props) {
+export default function ResourceLibrary({ savedIds, onToggleSaved, onOpenResource, onOpenInternal, onBack }: Props) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<string | null>(null);
   const [savedOnly, setSavedOnly] = useState(false);
@@ -94,6 +97,8 @@ export default function ResourceLibrary({ savedIds, onToggleSaved, onBack }: Pro
                 resource={r}
                 saved={savedIds.has(r.id)}
                 onToggleSaved={() => onToggleSaved(r.id)}
+                onOpenResource={onOpenResource}
+                onOpenInternal={onOpenInternal}
               />
             ))}
           </div>

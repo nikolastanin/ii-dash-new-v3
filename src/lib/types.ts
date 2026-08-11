@@ -16,6 +16,8 @@ export interface ToolResource extends ResourceBase {
   provider: string;
   description: string;
   cta: string;
+  // When set, the tool card opens this in-app screen instead of `url`.
+  internalScreen?: "mortgage-calculator" | "remortgage-calculator";
 }
 
 export interface GuideResource extends ResourceBase {

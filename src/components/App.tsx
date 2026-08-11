@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { GoalInstance, NotificationItem, QuickFormState } from "@/lib/types";
+import type { GoalInstance, NotificationItem, QuickFormState, Resource } from "@/lib/types";
 import { GOAL_TEMPLATES, matchTemplateId } from "@/lib/data";
 import Header from "@/components/Header";
 import Toast from "@/components/Toast";
 import Tour from "@/components/Tour";
+import ResourceLightbox from "@/components/ResourceLightbox";
 import { DASHBOARD_TOUR_STEPS } from "@/lib/tour";
 import Landing from "@/components/screens/Landing";
 import QuickForm from "@/components/screens/QuickForm";
@@ -15,8 +16,20 @@ import Dashboard from "@/components/screens/Dashboard";
 import StepDetail from "@/components/screens/StepDetail";
 import ResourceLibrary from "@/components/screens/ResourceLibrary";
 import Goals from "@/components/screens/Goals";
+import MortgageCalculator from "@/components/screens/MortgageCalculator";
+import RemortgageCalculator from "@/components/screens/RemortgageCalculator";
 
-type Screen = "landing" | "quickform" | "chat" | "loading" | "dashboard" | "step-detail" | "library" | "goals";
+type Screen =
+  | "landing"
+  | "quickform"
+  | "chat"
+  | "loading"
+  | "dashboard"
+  | "step-detail"
+  | "library"
+  | "goals"
+  | "mortgage-calculator"
+  | "remortgage-calculator";
 
 const EMPTY_FORM: QuickFormState = {
   name: "",
@@ -50,6 +63,8 @@ export default function App() {
   const [tourActive, setTourActive] = useState(false);
   const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const [blinkKey, setBlinkKey] = useState(0);
+  const [activeResource, setActiveResource] = useState<Resource | null>(null);
+  const [reminderToast, setReminderToast] = useState<{ id: string; text: string } | null>(null);
 
   useEffect(() => {
     if (!toast) return;
@@ -58,6 +73,14 @@ export default function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, [toast]);
+
+  useEffect(() => {
+    if (!reminderToast) return;
+    const timer = setTimeout(() => {
+      setReminderToast((t) => (t?.id === reminderToast.id ? null : t));
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [reminderToast]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -199,6 +222,12 @@ export default function App() {
     setScreen("goals");
   }
 
+  function openCalculator(screenName: string) {
+    if (screenName !== "mortgage-calculator" && screenName !== "remortgage-calculator") return;
+    setPreviousScreen(screen);
+    setScreen(screenName);
+  }
+
   function selectGoal(goalId: string) {
     setActiveGoalId(goalId);
     setScreen("dashboard");
@@ -222,12 +251,20 @@ export default function App() {
         blinkKey={blinkKey}
       />
       <Toast toast={toast} />
+      <Toast toast={reminderToast} position="top-right" variant="reminder" />
+      <ResourceLightbox
+        resource={activeResource}
+        onClose={() => {
+          setActiveResource(null);
+          setReminderToast({ id: makeId("reminder"), text: "Don't forget to check off your progress!" });
+        }}
+      />
       <Tour
         steps={DASHBOARD_TOUR_STEPS}
         active={tourActive}
         onFinish={() => {
           setTourActive(false);
-          pushPointsNotification(GOAL_CREATION_POINTS, "new goal created!");
+          pushPointsNotification(GOAL_CREATION_POINTS, "finished onboarding!");
         }}
       />
 
@@ -265,6 +302,8 @@ export default function App() {
             setScreen("step-detail");
           }}
           onToggleStepDone={toggleStepDone}
+          onOpenInternal={openCalculator}
+          onOpenResource={setActiveResource}
           disableSticky={tourActive}
         />
       )}
@@ -281,6 +320,8 @@ export default function App() {
           onToggleItemDone={toggleItemDone}
           savedIds={savedIds}
           onToggleSaved={toggleSaved}
+          onOpenResource={setActiveResource}
+          onOpenInternal={openCalculator}
           onBack={() => setScreen("dashboard")}
           onToggleDone={() => toggleStepDone(currentDetailStepId)}
           disableSticky={tourActive}
@@ -288,12 +329,22 @@ export default function App() {
       )}
 
       {screen === "library" && (
-        <ResourceLibrary savedIds={savedIds} onToggleSaved={toggleSaved} onBack={() => setScreen(previousScreen)} />
+        <ResourceLibrary
+          savedIds={savedIds}
+          onToggleSaved={toggleSaved}
+          onOpenResource={setActiveResource}
+          onOpenInternal={openCalculator}
+          onBack={() => setScreen(previousScreen)}
+        />
       )}
 
       {screen === "goals" && (
         <Goals goals={goals} onSelectGoal={selectGoal} onAddGoal={startAddGoal} onBack={() => setScreen(previousScreen)} />
       )}
+
+      {screen === "mortgage-calculator" && <MortgageCalculator onBack={() => setScreen(previousScreen)} />}
+
+      {screen === "remortgage-calculator" && <RemortgageCalculator onBack={() => setScreen(previousScreen)} />}
     </>
   );
 }

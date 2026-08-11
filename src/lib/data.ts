@@ -8,6 +8,34 @@ import type { GoalAlert, GoalTemplate, Phase, Resource, Step } from "./types";
 // content.
 
 export const RESOURCES: Record<string, Resource> = {
+  "tool-mortgage-calculator": {
+    id: "tool-mortgage-calculator",
+    type: "tool",
+    sponsored: false,
+    featured: true,
+    category: "Mortgages",
+    disclosure: "",
+    provider: "Investing Insiders",
+    title: "Mortgage Calculator",
+    description: "Answer 3 quick questions to see roughly what you could borrow and your monthly payment.",
+    cta: "Try it",
+    url: "#",
+    internalScreen: "mortgage-calculator",
+  },
+  "tool-remortgage-calculator": {
+    id: "tool-remortgage-calculator",
+    type: "tool",
+    sponsored: false,
+    featured: true,
+    category: "Mortgages",
+    disclosure: "",
+    provider: "Investing Insiders",
+    title: "Re-mortgage Calculator",
+    description: "See what you could save by switching, compared to sitting on your current rate.",
+    cta: "Try it",
+    url: "#",
+    internalScreen: "remortgage-calculator",
+  },
   "tool-ajbell": {
     id: "tool-ajbell",
     type: "tool",

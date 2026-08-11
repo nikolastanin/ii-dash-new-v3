@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { phaseLabel, pointsForItem, RESOURCES } from "@/lib/data";
 import { GuideCard, ResourceBubbleStack, ResourceRow, ToolCard } from "@/components/resources";
-import type { GuideResource, Phase, Step, ToolResource } from "@/lib/types";
+import type { GuideResource, Phase, Resource, Step, ToolResource } from "@/lib/types";
 import Button from "@/components/ui/Button";
 import StickyProgress from "@/components/StickyProgress";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -18,6 +18,8 @@ type Props = {
   onToggleItemDone: (key: string, points: number) => void;
   savedIds: Set<string>;
   onToggleSaved: (id: string) => void;
+  onOpenResource: (resource: Resource) => void;
+  onOpenInternal: (screen: string) => void;
   onBack: () => void;
   onToggleDone: () => void;
   disableSticky?: boolean;
@@ -33,6 +35,8 @@ export default function StepDetail({
   onToggleItemDone,
   savedIds,
   onToggleSaved,
+  onOpenResource,
+  onOpenInternal,
   onBack,
   onToggleDone,
   disableSticky = false,
@@ -78,14 +82,25 @@ export default function StepDetail({
             {tool && (
               <div>
                 <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Recommended tool</p>
-                <ToolCard tool={tool} saved={savedIds.has(tool.id)} onToggleSaved={() => onToggleSaved(tool.id)} />
+                <ToolCard
+                  tool={tool}
+                  saved={savedIds.has(tool.id)}
+                  onToggleSaved={() => onToggleSaved(tool.id)}
+                  onOpenResource={onOpenResource}
+                  onOpenInternal={onOpenInternal}
+                />
               </div>
             )}
 
             {relatedGuide && (
               <div>
                 <p className="text-xs uppercase tracking-wide font-semibold text-inksoft mb-3">Read next</p>
-                <GuideCard guide={relatedGuide} saved={savedIds.has(relatedGuide.id)} onToggleSaved={() => onToggleSaved(relatedGuide.id)} />
+                <GuideCard
+                  guide={relatedGuide}
+                  saved={savedIds.has(relatedGuide.id)}
+                  onToggleSaved={() => onToggleSaved(relatedGuide.id)}
+                  onOpenResource={onOpenResource}
+                />
               </div>
             )}
           </aside>
@@ -185,6 +200,8 @@ export default function StepDetail({
                               resource={r}
                               saved={savedIds.has(r.id)}
                               onToggleSaved={() => onToggleSaved(r.id)}
+                              onOpenResource={onOpenResource}
+                              onOpenInternal={onOpenInternal}
                             />
                           ))}
                         </div>

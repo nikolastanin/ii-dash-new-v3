@@ -10,6 +10,20 @@ type SaveProps = {
   onToggleSaved?: () => void;
 };
 
+// A resource click should open our own tool's dedicated page when it has
+// one, and only fall back to the lightbox preview for everything else.
+function openResource(
+  resource: Resource,
+  onOpenResource: (resource: Resource) => void,
+  onOpenInternal?: (screen: string) => void
+) {
+  if (resource.type === "tool" && resource.internalScreen && onOpenInternal) {
+    onOpenInternal(resource.internalScreen);
+    return;
+  }
+  onOpenResource(resource);
+}
+
 export function ResourceBubble({ resource }: { resource: Resource }) {
   const color = RESOURCE_COLORS[resource.type];
   const iconTextClass = RESOURCE_ICON_TEXT[resource.type] || "text-white";
@@ -41,13 +55,27 @@ export function ResourceBubbleStack({ resources }: { resources: Resource[] }) {
   );
 }
 
-export function ResourceRow({ resource, saved, onToggleSaved }: { resource: Resource } & SaveProps) {
+export function ResourceRow({
+  resource,
+  saved,
+  onToggleSaved,
+  onOpenResource,
+  onOpenInternal,
+}: {
+  resource: Resource;
+  onOpenResource: (resource: Resource) => void;
+  onOpenInternal?: (screen: string) => void;
+} & SaveProps) {
   const color = RESOURCE_COLORS[resource.type];
   const iconTextClass = RESOURCE_ICON_TEXT[resource.type] || "text-white";
   const typeLabel = RESOURCE_TYPE_LABELS[resource.type] || "Resource";
   return (
     <div className="flex items-center gap-3 bg-canvas rounded-20 px-4 py-3 hover:bg-brandlight/50 transition-colors">
-      <a href={resource.url} target="_blank" rel="noreferrer" className="flex items-center gap-3 flex-1 min-w-0">
+      <button
+        type="button"
+        onClick={() => openResource(resource, onOpenResource, onOpenInternal)}
+        className="flex items-center gap-3 flex-1 min-w-0 text-left"
+      >
       {resource.type === "video" ? (
         <span className="relative w-16 h-9 rounded-md overflow-hidden flex-shrink-0 bg-canvas">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -77,13 +105,23 @@ export function ResourceRow({ resource, saved, onToggleSaved }: { resource: Reso
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="text-inksoft flex-shrink-0">
         <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      </a>
+      </button>
       {onToggleSaved && <SaveButton saved={!!saved} onToggle={onToggleSaved} className="w-8 h-8 bg-transparent flex-shrink-0" />}
     </div>
   );
 }
 
-export function ToolCard({ tool, saved, onToggleSaved }: { tool: ToolResource } & SaveProps) {
+export function ToolCard({
+  tool,
+  saved,
+  onToggleSaved,
+  onOpenInternal,
+  onOpenResource,
+}: {
+  tool: ToolResource;
+  onOpenInternal?: (screen: string) => void;
+  onOpenResource: (resource: Resource) => void;
+} & SaveProps) {
   return (
     <div className="relative w-72 flex-shrink-0 flex flex-col justify-between rounded-[2rem] bg-surface border-2 border-transparent hover:border-ink/40 transition-colors p-7">
       {onToggleSaved && <SaveButton saved={!!saved} onToggle={onToggleSaved} className="absolute top-4 right-4 w-8 h-8 bg-canvas" />}
@@ -92,14 +130,25 @@ export function ToolCard({ tool, saved, onToggleSaved }: { tool: ToolResource } 
         <h3 className="mt-3 font-display text-[clamp(1.4rem,2.2vw,1.7rem)] text-candy-ruby pr-8">{tool.title}</h3>
         <p className="mt-2 text-xs text-candy-ruby/55 leading-relaxed">{tool.description}</p>
       </div>
-      <Button href={tool.url} variant="green" className="mt-7 self-start">
-        {tool.cta}
-      </Button>
+      {tool.internalScreen ? (
+        <Button onClick={() => onOpenInternal?.(tool.internalScreen!)} variant="green" className="mt-7 self-start">
+          {tool.cta}
+        </Button>
+      ) : (
+        <Button onClick={() => onOpenResource(tool)} variant="green" className="mt-7 self-start">
+          {tool.cta}
+        </Button>
+      )}
     </div>
   );
 }
 
-export function GuideCard({ guide, saved, onToggleSaved }: { guide: GuideResource } & SaveProps) {
+export function GuideCard({
+  guide,
+  saved,
+  onToggleSaved,
+  onOpenResource,
+}: { guide: GuideResource; onOpenResource: (resource: Resource) => void } & SaveProps) {
   return (
     <div className="rounded-[2rem] bg-green-light p-6">
       <div className="flex justify-between items-start gap-3 mb-2.5">
@@ -111,9 +160,9 @@ export function GuideCard({ guide, saved, onToggleSaved }: { guide: GuideResourc
       </div>
       <h3 className="font-display text-[clamp(1.1rem,2vw,1.35rem)] text-candy-ruby mb-2">{guide.title}</h3>
       <p className="text-sm text-candy-ruby/65 mb-4 leading-relaxed line-clamp-3">{guide.description}</p>
-      <a href={guide.url} target="_blank" rel="noreferrer" className="text-sm font-semibold text-green-woods hover:underline">
+      <button type="button" onClick={() => onOpenResource(guide)} className="text-sm font-semibold text-green-woods hover:underline">
         Read more →
-      </a>
+      </button>
     </div>
   );
 }
@@ -122,8 +171,15 @@ export function HighlightCard({
   resource,
   saved,
   onToggleSaved,
+  onOpenResource,
+  onOpenInternal,
   className = "",
-}: { resource: Resource; className?: string } & SaveProps) {
+}: {
+  resource: Resource;
+  onOpenResource: (resource: Resource) => void;
+  onOpenInternal?: (screen: string) => void;
+  className?: string;
+} & SaveProps) {
   const color = RESOURCE_COLORS[resource.type];
   const typeLabel = RESOURCE_TYPE_LABELS[resource.type] || "Resource";
 
@@ -191,15 +247,14 @@ export function HighlightCard({
 
   return (
     <div className={`relative break-inside-avoid ${className}`}>
-      <a
-        href={resource.url}
-        target="_blank"
-        rel="noreferrer"
-        className="block bg-surface rounded-20 border-2 border-transparent overflow-hidden hover:border-ink/40 transition-colors"
+      <button
+        type="button"
+        onClick={() => openResource(resource, onOpenResource, onOpenInternal)}
+        className="block w-full text-left bg-surface rounded-20 border-2 border-transparent overflow-hidden hover:border-ink/40 transition-colors"
       >
         {cover}
         <div className="p-5">{body}</div>
-      </a>
+      </button>
       {onToggleSaved && (
         <SaveButton saved={!!saved} onToggle={onToggleSaved} className="absolute top-3 right-3 w-8 h-8 bg-surface" />
       )}
